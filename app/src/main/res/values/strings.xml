@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AidTrackerApp</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="add_item_title">Add an item</string>
+    <string name="finish">Finish</string>
+    <string name="add_item_intro">Use the buttons bellow to navigate through adding a new item, press next to begin!</string>
+    <string name="product_list_loading">Getting list of products....</string>
+    <string name="select_product_select">Select a product</string>
+</resources>
