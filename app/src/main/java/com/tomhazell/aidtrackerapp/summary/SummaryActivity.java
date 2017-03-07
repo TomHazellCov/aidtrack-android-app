@@ -1,5 +1,9 @@
 package com.tomhazell.aidtrackerapp.summary;
 
+import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.Ndef;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -62,6 +66,8 @@ public class SummaryActivity extends AppCompatActivity {
 
         presenter = new SummaryPresenter(this, "1");//TODO in future get id from tag...
 
+        handleIntent(getIntent());
+
     }
 
     void displayItemData(WholeItem item) {
@@ -91,5 +97,25 @@ public class SummaryActivity extends AppCompatActivity {
                 viewSwitcher.showPrevious();
                 break;
         }
+    }
+
+    private void handleIntent(Intent intent){
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+
+            // In case we would still use the Tech Discovered Intent
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String[] techList = tag.getTechList();
+            String searchedTech = Ndef.class.getName();
+
+            //check we support the correct tech
+            for (String tech : techList) {
+                if (searchedTech.equals(tech)) {
+                    presenter.getTagDetails(tag);
+                    break;
+                }
+            }
+        }
+
     }
 }

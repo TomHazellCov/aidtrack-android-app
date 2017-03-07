@@ -1,5 +1,8 @@
 package com.tomhazell.aidtrackerapp.additem;
 
+import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -8,11 +11,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewTagIntroductionFragment;
+import com.tomhazell.aidtrackerapp.additem.fragments.NfcListener;
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectProductIntroductonFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.ValidatedFragment;
 import com.tomhazell.aidtrackerapp.widget.UnscrollableViewPager;
@@ -20,18 +25,32 @@ import com.tomhazell.aidtrackerapp.widget.UnscrollableViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Created by Tom Hazell on 16/02/2017.
  */
 
 public class AddItemActivity extends AppCompatActivity {
+
+    @BindView(R.id.startupCoordinator)
     CoordinatorLayout coordinatorLayout;
 
+    @BindView(R.id.startupViewPager)
     UnscrollableViewPager viewPager;
 
+    @BindView(R.id.collapse_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
+
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.startupBack)
     Button back;
+
+    @BindView(R.id.startupNext)
     Button next;
 
     private List<ValidatedFragment> fragments = new ArrayList<>();
@@ -43,7 +62,7 @@ public class AddItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
-        init();
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         //display backarrow in top actionbar
@@ -87,33 +106,24 @@ public class AddItemActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private void init() {
-        next = (Button) findViewById(R.id.startupNext);
-        back = (Button) findViewById(R.id.startupBack);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
-        viewPager = (UnscrollableViewPager) findViewById(R.id.startupViewPager);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.startupCoordinator);
 
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onNextClick();
-            }
-        });
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackClick();
-            }
-        });
+    @Override
+    protected void onNewIntent(Intent intent) {
+        // Tell the fragment we have a tag if needed
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        Fragment fragment = addItemAdapter.getItem(getCurrentPage());
+        if (fragment instanceof NfcListener && tag != null){
+            NfcListener listener = (NfcListener) fragment;
+            listener.onTagDiscovered(tag);
+        }
     }
 
+    @OnClick(R.id.startupNext)
     public void onNextClick() {
         presenter.onNextClick();
     }
 
+    @OnClick(R.id.startupBack)
     public void onBackClick() {
         presenter.onBackClick();
     }
@@ -158,5 +168,4 @@ public class AddItemActivity extends AppCompatActivity {
     void showSnackBar(String message) {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
-
 }
