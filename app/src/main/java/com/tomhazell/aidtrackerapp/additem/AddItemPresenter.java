@@ -28,7 +28,7 @@ public class AddItemPresenter {
             } else {
                 activity.hideNavigation(true);
                 activity.setPage(currentPage + 1);
-                doUpload();
+//                doUpload();TODO
             }
         }
     }
