@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
+import android.nfc.tech.NfcA;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.tomhazell.aidtrackerapp.R;
+import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -106,16 +109,21 @@ public class SummaryActivity extends AppCompatActivity {
             // In case we would still use the Tech Discovered Intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String[] techList = tag.getTechList();
-            String searchedTech = Ndef.class.getName();
 
             //check we support the correct tech
             for (String tech : techList) {
-                if (searchedTech.equals(tech)) {
+                if (tech.equals(Ndef.class.getName()) || tech.equals(NdefFormatable.class.getName())) {
                     presenter.getTagDetails(tag);
                     break;
                 }
             }
         }
 
+    }
+
+    void navigateToAddItemActivity(){
+        Intent i = new Intent(SummaryActivity.this, AddItemActivity.class);
+        startActivity(i);
+        finish();
     }
 }

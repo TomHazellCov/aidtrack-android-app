@@ -6,12 +6,12 @@ import java.nio.charset.StandardCharsets;
  * Created by Tom Hazell on 07/03/2017.
  */
 
-public class NdefTagDescription {
+public class NfcTagDescription {
 
     private boolean isBlank;
     private String contents;
 
-    public NdefTagDescription(byte[] content){
+    public NfcTagDescription(byte[] content){
         if (content.length > 0) {
             this.contents = new String(content, StandardCharsets.UTF_8);
             isBlank = false;

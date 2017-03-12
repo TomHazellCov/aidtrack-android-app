@@ -39,7 +39,7 @@ public class SummaryPresenter implements NfcCallback {
     }
 
     @Override
-    public void onGotNfcMessage(NdefTagDescription message) {
+    public void onGotNfcMessage(NfcTagDescription message) {
         //TODO make network request with the tag content
         //init web stuff
         //TODO this is to mock it out
@@ -58,8 +58,13 @@ public class SummaryPresenter implements NfcCallback {
     }
 
     @Override
-    public void onNfcError() {
-        //TODO show error on loading
+    public void onNfcError(Exception e) {
+        if (e instanceof TagNotOursException){
+            //goto page to add new tag
+            activity.navigateToAddItemActivity();
+        }else if (e instanceof TagNotSupportedException){
+            //TODO show error on loading
+        }
     }
 
 }
