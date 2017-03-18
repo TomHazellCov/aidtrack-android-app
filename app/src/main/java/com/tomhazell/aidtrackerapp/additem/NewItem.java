@@ -7,6 +7,16 @@ package com.tomhazell.aidtrackerapp.additem;
 public class NewItem {
     private Product product;
 
+    private Campaign campaign;
+
+    public Campaign getCampaign() {
+        return campaign;
+    }
+
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
+    }
+
     public Product getProduct() {
         return product;
     }

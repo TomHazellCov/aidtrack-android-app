@@ -14,8 +14,8 @@ import android.widget.ViewSwitcher;
 
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
+import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
-import com.tomhazell.aidtrackerapp.additem.Product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,53 +24,46 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Tom Hazell on 27/02/2017.
- * <p>
- * The flow is going to be get all products from API, then if they select one allow it to continue
- * if not they allow them to input stuff, when they hit next save product details then call on next click from activity
- * ...
+ * Created by tom on 18/03/17.
  */
-public class SelectProductIntroductonFragment extends Fragment implements ValidatedFragment, AdapterView.OnItemSelectedListener {
 
-    @BindView(R.id.select_product_viewswitcher)
+public class SelectCampaignIntroductionFragment extends Fragment implements ValidatedFragment, AdapterView.OnItemSelectedListener {
+
+    @BindView(R.id.select_campaign_viewswitcher)
     ViewSwitcher viewSwitcher;
 
-    @BindView(R.id.select_product_name)
+    @BindView(R.id.select_campaign_name)
     TextInputLayout layoutName;
 
-    @BindView(R.id.select_product_products)
-    Spinner selectProduct;
+    @BindView(R.id.select_campaign_campaigns)
+    Spinner selectCampaigns;
 
-    @BindView(R.id.select_product_type)
-    TextInputLayout layoutType;
+    boolean gotExistingCampaigns = false;//have we received a list of campaigns
+    boolean isCreatingCampaigns = true;//is the user creating a new product or using an existing one
+    boolean hasCreatedCampaign = false;
 
-
-    boolean gotProducts = false;//have we received a list of products
-    boolean isCreateingProduct = true;//is the user creating a new product or using an existing one
-    boolean hasCreatedProduct = false;
-
-    private List<Product> products;
-    private Product selectedProduct;
+    private List<Campaign> campaigns;
+    private Campaign selectedCampaign;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_additem_selectproduct, container, false);
+        View v = inflater.inflate(R.layout.fragment_additem_campaign, container, false);
         ButterKnife.bind(this, v);
 
-        selectProduct.setOnItemSelectedListener(this);
+        selectCampaigns.setOnItemSelectedListener(this);
         //create web request (mock out from now)
-        List<Product> prods = new ArrayList<>();
-        prods.add(new Product("Name", "type"));
-        prods.add(new Product("Name1", "type1"));
-        onGotProducts(prods);
+        List<Campaign> camps = new ArrayList<>();
+        camps.add(new Campaign("Name"));
+        camps.add(new Campaign("Name1"));
+        onGotCampaigns(camps);
 
         return v;
     }
 
-    void onGotProducts(List<Product> products) {
-        gotProducts = true;
-        this.products = products;
+    void onGotCampaigns(List<Campaign> campaigns) {
+        gotExistingCampaigns = true;
+        this.campaigns = campaigns;
         viewSwitcher.showNext();//show content not the progressbar
 
         //create array adapter for spinner
@@ -78,20 +71,20 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
 
         adapter.add("Add a new product");//add default option
 
-        //add all products to it
-        for (Product product : products) {
-            adapter.add(product.getName());
+        //add all campaigns to it
+        for (Campaign campaign : this.campaigns) {
+            adapter.add(campaign.getName());
         }
 
-        selectProduct.setAdapter(adapter);
-        selectProduct.setSelection(0);
+        selectCampaigns.setAdapter(adapter);
+        selectCampaigns.setSelection(0);
     }
 
     @Override
     public boolean validateDetails() {
-        if (gotProducts) {
-            if (isCreateingProduct){
-                if (hasCreatedProduct){
+        if (gotExistingCampaigns) {
+            if (isCreatingCampaigns){
+                if (hasCreatedCampaign){
                     return true;
                 }
 
@@ -101,12 +94,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                     return false;
                 }
 
-                if (layoutType.getEditText().getText().toString().equals("")) {
-                    layoutType.setError("Cant be empty");
-                    return false;
-                }
-
-                //createProduct api call, the call onproductCreated
+                //createProduct api call, then call onproductCreated TODO
                 return false;
 
             }else{
@@ -124,18 +112,18 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
 
     @Override
     public NewItem addDataToModel(NewItem newItem) {
-        newItem.setProduct(selectedProduct);
+        newItem.setCampaign(selectedCampaign);
         return newItem;
     }
 
     @Override
     public String getTitle() {
-        return "Select Product";
+        return "Select Campaign";
     }
 
-    void onProductCreated(Product product){
-        hasCreatedProduct = true;
-        this.selectedProduct = product;
+    void onCampaignCreated(Campaign campaign){
+        hasCreatedCampaign = true;
+        this.selectedCampaign = campaign;
         ((AddItemActivity) getActivity()).onNextClick();
     }
 
@@ -143,13 +131,15 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         if (pos == 0){
-            isCreateingProduct = true;
+            isCreatingCampaigns = true;
             layoutName.setVisibility(View.VISIBLE);
-            layoutType.setVisibility(View.VISIBLE);
+
+            selectedCampaign = null;
         }else{
-            isCreateingProduct = false;
+            isCreatingCampaigns = false;
             layoutName.setVisibility(View.INVISIBLE);
-            layoutType.setVisibility(View.INVISIBLE);
+
+            selectedCampaign = campaigns.get(pos - 1);
         }
     }
 

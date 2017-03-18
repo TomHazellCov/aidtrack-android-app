@@ -18,8 +18,10 @@ import android.widget.Button;
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewTagIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.NfcListener;
+import com.tomhazell.aidtrackerapp.additem.fragments.SelectCampaignIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectProductIntroductonFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.ValidatedFragment;
+import com.tomhazell.aidtrackerapp.additem.fragments.WriteTagIntroductionFragment;
 import com.tomhazell.aidtrackerapp.widget.UnscrollableViewPager;
 
 import java.util.ArrayList;
@@ -74,6 +76,11 @@ public class AddItemActivity extends AppCompatActivity {
         //first add all framgnets
         fragments.add(new NewTagIntroductionFragment());
         fragments.add(new SelectProductIntroductonFragment());
+        fragments.add(new SelectCampaignIntroductionFragment());
+        //select Shipment
+//        fragments.add(new WriteTagIntroductionFragment());
+
+
 
         presenter = new AddItemPresenter(this, fragments.size());
         setDefaultTitle();

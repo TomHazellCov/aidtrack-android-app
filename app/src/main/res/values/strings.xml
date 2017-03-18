@@ -7,4 +7,6 @@
     <string name="add_item_intro">Use the buttons bellow to navigate through adding a new item, press next to begin!</string>
     <string name="product_list_loading">Getting list of products....</string>
     <string name="select_product_select">Select a product</string>
+    <string name="select_campaign_select">Select a campagin or add a new one</string>
+    <string name="campaign_list_loading">Loading all campaigns</string>
 </resources>
