@@ -9,6 +9,16 @@ public class NewItem {
 
     private Campaign campaign;
 
+    private Shipment shipment;
+
+    public Shipment getShipment() {
+        return shipment;
+    }
+
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
+    }
+
     public Campaign getCampaign() {
         return campaign;
     }

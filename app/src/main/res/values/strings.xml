@@ -9,4 +9,6 @@
     <string name="select_product_select">Select a product</string>
     <string name="select_campaign_select">Select a campagin or add a new one</string>
     <string name="campaign_list_loading">Loading all campaigns</string>
+    <string name="shipment_list_loading">Loading...</string>
+    <string name="select_shipment_select">Select A Shipment</string>
 </resources>

@@ -20,6 +20,7 @@ import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+//TODO handle when refered form newItem thing
 public class SummaryActivity extends AppCompatActivity {
 
     @BindView(R.id.summaryHistory)
@@ -72,6 +73,8 @@ public class SummaryActivity extends AppCompatActivity {
         handleIntent(getIntent());
 
     }
+
+
 
     void displayItemData(WholeItem item) {
         adapter = new ItemHistoryAdapter(item.getTrackings());

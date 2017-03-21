@@ -15,8 +15,8 @@ import android.widget.ViewSwitcher;
 
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
-import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
+import com.tomhazell.aidtrackerapp.additem.Shipment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,50 +25,49 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by tom on 18/03/17.
+ * Created by Tom Hazell on 21/03/2017.
  */
+public class SelectShipmentIntroductionFragment extends Fragment implements ValidatedFragment, AdapterView.OnItemSelectedListener {
 
-public class SelectCampaignIntroductionFragment extends Fragment implements ValidatedFragment, AdapterView.OnItemSelectedListener {
-
-    @BindView(R.id.select_campaign_viewswitcher)
+    @BindView(R.id.select_shipment_viewswitcher)
     ViewSwitcher viewSwitcher;
 
-    @BindView(R.id.select_campaign_name)
+    @BindView(R.id.select_shipment_name)
     TextInputLayout layoutName;
 
-    @BindView(R.id.select_campaign_campaigns)
-    Spinner selectCampaigns;
+    @BindView(R.id.select_shipment_shipments)
+    Spinner selectShipment;
 
-    boolean gotExistingCampaigns = false;//have we received a list of campaigns
-    boolean isCreatingCampaigns = true;//is the user creating a new product or using an existing one
-    boolean hasCreatedCampaign = false;
+    boolean gotExistingShipments = false;//have we received a list of shipments
+    boolean isCreatingShipments = true;//is the user creating a new product or using an existing one
+    boolean hasCreatedShipment = false;
 
-    private List<Campaign> campaigns;
-    private Campaign selectedCampaign;
+    private List<Shipment> shipments;
+    private Shipment selectedShipment;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_additem_campaign, container, false);
+        View v = inflater.inflate(R.layout.fragment_additem_shipment, container, false);
         ButterKnife.bind(this, v);
 
-        selectCampaigns.setOnItemSelectedListener(this);
+        selectShipment.setOnItemSelectedListener(this);
         //create web request (mock out from now)
-        List<Campaign> camps = new ArrayList<>();
-        camps.add(new Campaign("Name"));
-        camps.add(new Campaign("Name1"));
-        onGotCampaigns(camps);
+        List<Shipment> shipments = new ArrayList<>();
+        shipments.add(new Shipment("Name"));
+        shipments.add(new Shipment("Name1"));
+        onGotShipments(shipments);
 
         return v;
     }
 
-    void onGotCampaigns(List<Campaign> campaigns) {
-        if (gotExistingCampaigns) {
-            Log.w(this.getClass().getSimpleName(), "We got campains twice we should not be here");
+    void onGotShipments(List<Shipment> shipments) {
+        if (gotExistingShipments) {
+            Log.w(this.getClass().getSimpleName(), "We got Shipments twice we should not be here");
             return;
         }
-        gotExistingCampaigns = true;
-        this.campaigns = campaigns;
+        gotExistingShipments = true;
+        this.shipments = shipments;
         viewSwitcher.showNext();//show content not the progressbar
 
         //create array adapter for spinner
@@ -76,20 +75,20 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
 
         adapter.add("Add a new product");//add default option
 
-        //add all campaigns to it
-        for (Campaign campaign : this.campaigns) {
-            adapter.add(campaign.getName());
+        //add all shipments to it
+        for (Shipment shipment : this.shipments) {
+            adapter.add(shipment.getName());
         }
 
-        selectCampaigns.setAdapter(adapter);
-        selectCampaigns.setSelection(0);
+        selectShipment.setAdapter(adapter);
+        selectShipment.setSelection(0);
     }
 
     @Override
     public boolean validateDetails() {
-        if (gotExistingCampaigns) {
-            if (isCreatingCampaigns){
-                if (hasCreatedCampaign){
+        if (gotExistingShipments) {
+            if (isCreatingShipments){
+                if (hasCreatedShipment){
                     return true;
                 }
 
@@ -117,18 +116,18 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
 
     @Override
     public NewItem addDataToModel(NewItem newItem) {
-        newItem.setCampaign(selectedCampaign);
+        newItem.setShipment(selectedShipment);
         return newItem;
     }
 
     @Override
     public String getTitle() {
-        return "Select Campaign";
+        return "Select Shipments";
     }
 
-    void onCampaignCreated(Campaign campaign){
-        hasCreatedCampaign = true;
-        this.selectedCampaign = campaign;
+    void onShipmentCreated(Shipment shipment){
+        hasCreatedShipment = true;
+        this.selectedShipment = shipment;
         ((AddItemActivity) getActivity()).onNextClick();
     }
 
@@ -136,15 +135,15 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         if (pos == 0){
-            isCreatingCampaigns = true;
+            isCreatingShipments = true;
             layoutName.setVisibility(View.VISIBLE);
 
-            selectedCampaign = null;
+            selectedShipment = null;
         }else{
-            isCreatingCampaigns = false;
+            isCreatingShipments = false;
             layoutName.setVisibility(View.INVISIBLE);
 
-            selectedCampaign = campaigns.get(pos - 1);
+            selectedShipment = shipments.get(pos - 1);
         }
     }
 
