@@ -43,4 +43,8 @@ public class AddItemPresenter {
     public void onStop() {
         //cancel network request if any are ongoing TODO
     }
+
+    public NewItem getNewItem(){
+        return model;
+    }
 }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.tomhazell.aidtrackerapp.R;
+import com.tomhazell.aidtrackerapp.additem.fragments.NewItemCallBack;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewTagIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.NfcListener;
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectCampaignIntroductionFragment;
@@ -36,7 +37,7 @@ import butterknife.OnClick;
  * Created by Tom Hazell on 16/02/2017.
  */
 
-public class AddItemActivity extends AppCompatActivity {
+public class AddItemActivity extends AppCompatActivity implements NewItemCallBack {
 
     @BindView(R.id.startupCoordinator)
     CoordinatorLayout coordinatorLayout;
@@ -174,5 +175,10 @@ public class AddItemActivity extends AppCompatActivity {
 
     void showSnackBar(String message) {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public NewItem getItem() {
+        return presenter.getNewItem();
     }
 }
