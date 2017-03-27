@@ -1,5 +1,11 @@
 package com.tomhazell.aidtrackerapp.summary;
 
+import com.tomhazell.aidtrackerapp.additem.Campaign;
+import com.tomhazell.aidtrackerapp.additem.Item;
+import com.tomhazell.aidtrackerapp.additem.ItemHistory;
+import com.tomhazell.aidtrackerapp.additem.Product;
+import com.tomhazell.aidtrackerapp.additem.Shipment;
+
 import java.util.List;
 
 /**
@@ -7,79 +13,59 @@ import java.util.List;
  */
 
 public class WholeItem {
-    private List<ItemTracking> trackings;
+//    private String itemName;
+//    private String itemDescription;
+//    private String itemManufacture;
+//
+//    private String campaignName;
+//    private String campaignCreatorName;
+//    private String shipmentName;
+//    private String destination;
 
-    private String itemName;
-    private String itemDescription;
-    private String itemManufacture;
+    private Campaign campaign;
+    private Shipment shipment;
+    private Product product;
+    private Item item;
 
-    private String campaignName;
-    private String campaignCreatorName;
-    private String shipmentName;
-    private String destination;
-
-
-    public String getDestination() {
-        return destination;
+    public WholeItem() {
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public WholeItem(Campaign campaign, Shipment shipment, Item item, Product product) {
+        this.campaign = campaign;
+        this.shipment = shipment;
+        this.item = item;
+        this.product = product;
     }
 
-    public String getCampaignName() {
-        return campaignName;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setCampaignName(String campaignName) {
-        this.campaignName = campaignName;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public String getCampaignCreatorName() {
-        return campaignCreatorName;
+    public Campaign getCampaign() {
+        return campaign;
     }
 
-    public void setCampaignCreatorName(String campaignCreatorName) {
-        this.campaignCreatorName = campaignCreatorName;
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
-    public String getShipmentName() {
-        return shipmentName;
+    public Shipment getShipment() {
+        return shipment;
     }
 
-    public void setShipmentName(String shipmentName) {
-        this.shipmentName = shipmentName;
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
     }
 
-    public List<ItemTracking> getTrackings() {
-        return trackings;
+    public Item getItem() {
+        return item;
     }
 
-    public void setTrackings(List<ItemTracking> trackings) {
-        this.trackings = trackings;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    public String getItemDescription() {
-        return itemDescription;
-    }
-
-    public void setItemDescription(String itemDescription) {
-        this.itemDescription = itemDescription;
-    }
-
-    public String getItemManufacture() {
-        return itemManufacture;
-    }
-
-    public void setItemManufacture(String itemManufacture) {
-        this.itemManufacture = itemManufacture;
+    public void setItem(Item item) {
+        this.item = item;
     }
 }

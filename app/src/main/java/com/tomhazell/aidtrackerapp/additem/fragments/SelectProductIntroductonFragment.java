@@ -18,13 +18,14 @@ import android.widget.ViewSwitcher;
 import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
-import com.tomhazell.aidtrackerapp.additem.Campaign;
+import com.tomhazell.aidtrackerapp.additem.Manufacturer;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.ProductResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,8 +53,8 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
     @BindView(R.id.select_product_products)
     Spinner selectProduct;
 
-    @BindView(R.id.select_product_type)
-    TextInputLayout layoutType;
+    @BindView(R.id.select_product_discription)
+    TextInputLayout layoutDiscription;
 
     @BindView(R.id.select_product_error_creating)
     TextView errorCreating;
@@ -61,13 +62,20 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
     @BindView(R.id.select_product_error_loading)
     Button errorButton;
 
+    @BindView(R.id.select_product_manufacture)
+    Spinner manufactureSelect;
+
+    @BindView(R.id.select_product_manufacture_name)
+    TextInputLayout manufactureText;
 
     boolean gotProducts = false;//have we received a list of products
     boolean isCreateingProduct = false;//is the user creating a new product or using an existing one
     boolean hasCreatedProduct = false;
 
     private List<Product> products;
+    private List<Manufacturer> manufacturers;
     private Product selectedProduct;
+    private Manufacturer selectedManufacturer;
 
     private ArrayList<Disposable> disposables = new ArrayList<>();
 
@@ -96,7 +104,8 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
 
                     @Override
                     public void onNext(List<Product> value) {
-                        onGotProducts(value);
+                        products = value;
+                        getManufactures();
                     }
 
                     @Override
@@ -109,14 +118,43 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                     public void onComplete() {
                     }
                 });
+
+        //TODO get all manafacutures and then create if needed
     }
 
-    void onGotProducts(List<Product> products) {
+    void getManufactures() {
+        NetworkManager.getInstance().getManufacturesService().getAllManufacturers()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Manufacturer>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<Manufacturer> value) {
+                        manufacturers = value;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorButton.setVisibility(View.VISIBLE);
+                        Log.e(getClass().getSimpleName(), "Failed to get products", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        onGotProducts();
+                    }
+                });
+    }
+
+    void onGotProducts() {
         gotProducts = true;
-        this.products = products;
         viewSwitcher.showNext();//show content not the progressbar
 
-        //create array adapter for spinner
+        //create array adapter for products
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
 
         adapter.add("Add a new product");//add default option
@@ -128,6 +166,20 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
 
         selectProduct.setAdapter(adapter);
         selectProduct.setSelection(0);
+
+        //create array adapter for manafactures
+        ArrayAdapter<String> adapterManfact = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+
+        adapterManfact.add("Add a new product");//add default option
+
+        //add all products to it
+        for (Manufacturer manufacturer : manufacturers) {
+            adapterManfact.add(manufacturer.getName());
+        }
+
+        manufactureSelect.setAdapter(adapterManfact);
+        manufactureSelect.setSelection(0);
+
     }
 
     @OnClick(R.id.select_product_error_loading)
@@ -140,11 +192,8 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
     @Override
     public boolean validateDetails() {
         if (gotProducts) {
-            if (selectedProduct == null || !(layoutName.getEditText().getText().toString().equals(selectedProduct.getName()) && layoutType.getEditText().getText().toString().equals(selectedProduct.getType()))) {//if selectedCampain is null then we are creating one or we have already created one
-                if (hasCreatedProduct) {
-                    return true;
-                }
-
+            if (selectProduct.getSelectedItemPosition() == 0 && !(!hasCreatedProduct || (layoutName.getEditText().getText().toString().equals(selectedProduct.getName()) && layoutDiscription.getEditText().getText().toString().equals(selectedProduct.getDescription())))) {//if selectedCampain is null then we are creating one or we have already created one
+                boolean errors = false;
                 if (isCreateingProduct) {
                     return false;
                 }
@@ -152,17 +201,33 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                 //check feilds are correct then send to server
                 if (layoutName.getEditText().getText().toString().equals("")) {
                     layoutName.setError("Cant be empty");
+                    errors = true;
+                }
+
+                if (layoutDiscription.getEditText().getText().toString().equals("")) {
+                    layoutDiscription.setError("Cant be empty");
+                    errors = true;
+                }
+
+                if (selectProduct.getSelectedItemPosition() == 0 &&manufactureText.getEditText().getText().toString().equals("")) {
+                    manufactureText.setError("Cant be empty");
+                    errors = true;
+                }
+
+                if (errors){
                     return false;
                 }
 
-                if (layoutType.getEditText().getText().toString().equals("")) {
-                    layoutType.setError("Cant be empty");
+                if (selectProduct.getSelectedItemPosition() == 0 && !(selectedManufacturer == null || manufactureSelect.getSelectedItemPosition() == 0 && manufactureText.getEditText().getText().toString().equals(selectedManufacturer.getName()))) {
+                    Manufacturer manufacturer = new Manufacturer();
+                    manufacturer.setName(manufactureText.getEditText().getText().toString());
+                    createManufacturer(manufacturer);
                     return false;
                 }
 
                 //createProduct api call
-
-                Product product = new Product(layoutName.getEditText().getText().toString(), layoutType.getEditText().getText().toString());
+                Product product = new Product(layoutName.getEditText().getText().toString(), layoutDiscription.getEditText().getText().toString());
+                product.setManufacturer(selectedManufacturer);
                 createProduct(product);
                 return false;
 
@@ -172,6 +237,37 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         }
 
         return false;//check selected item, validate feilds if opeion selected
+    }
+
+    private void createManufacturer(Manufacturer manufacturer) {
+        errorCreating.setVisibility(View.INVISIBLE);
+        isCreateingProduct = true;
+        NetworkManager.getInstance().getManufacturesService().createManufacturer(manufacturer)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Manufacturer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Manufacturer value) {
+                        selectedManufacturer = value;
+                        isCreateingProduct = false;
+                        validateDetails();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorCreating.setVisibility(View.VISIBLE);
+                        Log.e(getClass().getSimpleName(), "Failed to get Manfactures", e);
+                        isCreateingProduct = false;
+                    }
+
+                    @Override
+                    public void onComplete() {}
+                });
     }
 
     private void createProduct(Product product) {
@@ -231,12 +327,25 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
     //for spinner selection
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-        if (pos == 0) {
-            layoutName.setVisibility(View.VISIBLE);
-            layoutType.setVisibility(View.VISIBLE);
+        if (adapterView.getId() == R.id.select_product_products) {
+
+            if (pos == 0) {
+                layoutName.setVisibility(View.VISIBLE);
+                layoutDiscription.setVisibility(View.VISIBLE);
+            } else {
+                layoutName.setVisibility(View.INVISIBLE);
+                layoutDiscription.setVisibility(View.INVISIBLE);
+                selectedProduct = products.get(pos);
+            }
+        } else if (adapterView.getId() == R.id.select_product_manufacture) {
+            if (pos == 0) {
+                manufactureText.setVisibility(View.VISIBLE);
+            } else {
+                manufactureText.setVisibility(View.INVISIBLE);
+                selectedManufacturer = manufacturers.get(pos);
+            }
         } else {
-            layoutName.setVisibility(View.INVISIBLE);
-            layoutType.setVisibility(View.INVISIBLE);
+            Log.wtf(getClass().getSimpleName(), "Could not identify spinner");
         }
     }
 

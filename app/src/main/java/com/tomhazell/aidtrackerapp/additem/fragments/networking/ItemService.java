@@ -4,6 +4,7 @@ import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.CampaignResponse;
 import com.tomhazell.aidtrackerapp.additem.Item;
 import com.tomhazell.aidtrackerapp.additem.ItemResponse;
+import com.tomhazell.aidtrackerapp.additem.OuterItem;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import retrofit2.http.Path;
 public interface ItemService {
 
     @GET("v1/items/id/{id}")
-    Observable<Item> getItemById(@Path("id") int id);
+    Observable<OuterItem> getItemById(@Path("id") int id);
 
     @POST("v1/items")
     Observable<ItemResponse> createItem(@Body Item item);

@@ -19,7 +19,7 @@ import retrofit2.http.Path;
 public interface ShipmentService {
 
     @GET("v1/shipments/id/{id}")
-    Observable<List<Shipment>> getShipmentById(@Path("id") int id);
+    Observable<Shipment> getShipmentById(@Path("id") int id);
 
     @GET("v1/shipments")
     Observable<List<Shipment>> getAllShipments();

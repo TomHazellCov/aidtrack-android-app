@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tomhazell.aidtrackerapp.R;
+import com.tomhazell.aidtrackerapp.additem.ItemHistory;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -22,9 +23,9 @@ import butterknife.ButterKnife;
 public class ItemHistoryAdapter extends RecyclerView.Adapter<ItemHistoryAdapter.ViewHolder> {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-    private List<ItemTracking> items;
+    private List<ItemHistory> items;
 
-    public ItemHistoryAdapter(List<ItemTracking> items) {
+    public ItemHistoryAdapter(List<ItemHistory> items) {
         this.items = items;
     }
 
@@ -37,11 +38,12 @@ public class ItemHistoryAdapter extends RecyclerView.Adapter<ItemHistoryAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ItemTracking tracking = items.get(position);
+        ItemHistory tracking = items.get(position);
 
-        holder.date.setText(dateFormat.format(tracking.getDate()));
+//        holder.status.setText(dateFormat.format(tracking.getDate()));
+        holder.status.setText(tracking.getStatus());
 
-        holder.location.setText(tracking.getStatus() + " at " + tracking.getLocation());
+        holder.location.setText(tracking.getLatitude() + ", " + tracking.getLongitude());
     }
 
     @Override
@@ -52,7 +54,7 @@ public class ItemHistoryAdapter extends RecyclerView.Adapter<ItemHistoryAdapter.
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // ViewHolder used to store the recyclable views
         @BindView(R.id.historyDate)
-        TextView date;
+        TextView status;
         @BindView(R.id.historyLocation)
         TextView location;
 

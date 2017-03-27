@@ -104,7 +104,8 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
                     }
 
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {
+                    }
                 });
     }
 
@@ -162,21 +163,22 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
                     }
 
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {
+                    }
                 });
     }
 
 
     @OnClick(R.id.select_shipment_error)
-    void onErrorClicked(){
+    void onErrorClicked() {
         getAllShipments();
     }
 
     @Override
     public boolean validateDetails() {
         if (gotExistingShipments) {
-            if (selectedShipment == null || !layoutName.getEditText().getText().toString().equals(selectedShipment.getName())){
-                if (hasCreatedShipment || isCreatingShipment){
+            if (selectShipment.getSelectedItemPosition() == 0 && !(!hasCreatedShipment || (layoutName.getEditText().getText().toString().equals(selectedShipment.getName())))) {
+                if (isCreatingShipment) {
                     return true;
                 }
 
@@ -185,7 +187,7 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
                     layoutName.setError("Cant be empty");
                     return false;
                 }
-                if (! (getActivity() instanceof NewItemCallBack)){
+                if (!(getActivity() instanceof NewItemCallBack)) {
                     Log.e(getClass().getSimpleName(), "Activity dose not inherit NewItemCaLLBACK...? BAD THINGS");
                     return false;
                 }
@@ -195,7 +197,7 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
                 createShipment(newShip);
                 return false;
 
-            }else{
+            } else {
                 return true;
             }
         }
@@ -219,7 +221,7 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
         return "Select Shipments";
     }
 
-    void onShipmentCreated(Shipment shipment){
+    void onShipmentCreated(Shipment shipment) {
         hasCreatedShipment = true;
         this.selectedShipment = shipment;
         ((AddItemActivity) getActivity()).onNextClick();
@@ -228,11 +230,11 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
     //for spinner selection
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-        if (pos == 0){
+        if (pos == 0) {
             layoutName.setVisibility(View.VISIBLE);
 
             selectedShipment = null;
-        }else{
+        } else {
             layoutName.setVisibility(View.INVISIBLE);
 
             selectedShipment = shipments.get(pos - 1);

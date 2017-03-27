@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 /**
  * Code from https://code.tutsplus.com/tutorials/reading-nfc-tags-with-android--mobile-17278
+ * //TODO use RxJava
  */
 public class NdefReaderTask extends AsyncTask<Tag, Void, NdefRecord> {
 
@@ -56,7 +57,7 @@ public class NdefReaderTask extends AsyncTask<Tag, Void, NdefRecord> {
         if (ndefRecord == null) {
             callback.onNfcError(exception);
         } else {
-            callback.onGotNfcMessage(new NfcTagDescription(ndefRecord.getPayload()));
+            callback.onGotNfcMessage(new NfcTagDescription(ndefRecord.getPayload()).getContents());
         }
     }
 }

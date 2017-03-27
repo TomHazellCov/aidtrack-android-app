@@ -6,7 +6,7 @@ package com.tomhazell.aidtrackerapp.summary;
 
 public interface NfcCallback {
 
-    void onGotNfcMessage(NfcTagDescription message);
+    void onGotNfcMessage(String message);
 
     /**
      * Can take, tagNotOursException or TagNotSupportedException

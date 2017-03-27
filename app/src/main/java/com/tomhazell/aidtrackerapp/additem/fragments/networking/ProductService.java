@@ -19,7 +19,7 @@ import retrofit2.http.Path;
 public interface ProductService {
 
     @GET("v1/products/id/{id}")
-    Observable<List<Product>> getProductById(@Path("id") int id);
+    Observable<Product> getProductById(@Path("id") int id);
 
     @GET("v1/products")
     Observable<List<Product>> getAllProducts();

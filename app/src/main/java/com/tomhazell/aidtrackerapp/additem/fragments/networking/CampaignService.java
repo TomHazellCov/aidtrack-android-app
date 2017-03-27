@@ -18,7 +18,7 @@ import retrofit2.http.Path;
 public interface CampaignService {
 
     @GET("v1/campaigns/id/{id}")
-    Observable<List<Campaign>> getCampaingById(@Path("id") int id);
+    Observable<Campaign> getCampaingById(@Path("id") int id);
 
     @GET("v1/campaigns")
     Observable<List<Campaign>> getAllCampaigns();

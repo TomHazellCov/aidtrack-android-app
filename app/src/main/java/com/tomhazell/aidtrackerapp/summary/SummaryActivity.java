@@ -5,7 +5,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
-import android.nfc.tech.NfcA;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -50,6 +49,9 @@ public class SummaryActivity extends AppCompatActivity {
     @BindView(R.id.summaryLocation)
     TextView location;
 
+    @BindView(R.id.summary_loading_text)
+    TextView loadingText;
+
     ItemHistoryAdapter adapter;
 
     SummaryPresenter presenter;
@@ -70,24 +72,29 @@ public class SummaryActivity extends AppCompatActivity {
 
         presenter = new SummaryPresenter(this, "1");//TODO in future get id from tag...
 
-        handleIntent(getIntent());
+//        handleIntent(getIntent());
+        presenter.onGotNfcMessage("2");
 
     }
 
-
+    @Override
+    protected void onStop() {
+        presenter.onStop();
+        super.onStop();
+    }
 
     void displayItemData(WholeItem item) {
-        adapter = new ItemHistoryAdapter(item.getTrackings());
+        adapter = new ItemHistoryAdapter(item.getItem().getHistory());
         historyRecycler.setAdapter(adapter);
 
-        itemTitle.setText(item.getItemName());
-        itemDescription.setText(item.getItemDescription());
-        itemManufacturer.setText(item.getItemManufacture());
+        itemTitle.setText(item.getProduct().getName());
+        itemDescription.setText(item.getProduct().getDescription());
+        itemManufacturer.setText(item.getProduct().getManufacturer().getName());
 
-        campaignCreatedBy.setText(item.getCampaignCreatorName());
-        campaignName.setText(item.getCampaignName());
-        shipment.setText(item.getShipmentName());
-        location.setText("Going to " + item.getDestination());
+        campaignCreatedBy.setText(item.getCampaign().getCreatedBy() + "TODO get user details");
+        campaignName.setText(item.getCampaign().getName());
+        shipment.setText(item.getShipment().getName());
+        location.setText("Going to " + "? is this being added?");
 
     }
 
@@ -105,7 +112,7 @@ public class SummaryActivity extends AppCompatActivity {
         }
     }
 
-    private void handleIntent(Intent intent){
+    private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 
@@ -124,9 +131,13 @@ public class SummaryActivity extends AppCompatActivity {
 
     }
 
-    void navigateToAddItemActivity(){
+    void navigateToAddItemActivity() {
         Intent i = new Intent(SummaryActivity.this, AddItemActivity.class);
         startActivity(i);
         finish();
+    }
+
+    void setLoadingText(String text){
+        loadingText.setText(text);
     }
 }

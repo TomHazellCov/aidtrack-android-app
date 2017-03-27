@@ -1,9 +1,24 @@
 package com.tomhazell.aidtrackerapp.summary;
 
 import android.nfc.Tag;
+import android.util.Log;
 
+import com.tomhazell.aidtrackerapp.NetworkManager;
+import com.tomhazell.aidtrackerapp.additem.Campaign;
+import com.tomhazell.aidtrackerapp.additem.Item;
+import com.tomhazell.aidtrackerapp.additem.OuterItem;
+import com.tomhazell.aidtrackerapp.additem.Product;
+import com.tomhazell.aidtrackerapp.additem.Shipment;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Tom Hazell on 07/03/2017.
@@ -16,6 +31,8 @@ public class SummaryPresenter implements NfcCallback {
     private SummaryActivity activity;
     private WholeItem item;
 
+    private List<Disposable> disposables = new ArrayList<>();
+
     public SummaryPresenter(SummaryActivity activity, String tagId) {
         this.activity = activity;
         this.tagId = tagId;
@@ -25,53 +42,160 @@ public class SummaryPresenter implements NfcCallback {
     }
 
 
-    void getTagDetails(Tag tag){
+    void getTagDetails(Tag tag) {
         //start the task that get the tag contents, it will callback to #onGotNfcMessage
         new NdefReaderTask(this).execute(tag);
     }
 
 
-    private void onGotProduct(WholeItem item){
+    private void onGotProduct(WholeItem item) {
         this.item = item;
         activity.displayItemData(this.item);
         activity.setViewSwitcherItem(VIEW_CONTENT);
     }
 
     @Override
-    public void onGotNfcMessage(NfcTagDescription message) {
+    public void onGotNfcMessage(String message) {
         //TODO improve this by using a diffrent message type, but assume if tag is numeric it is ours
         int id;
-        try{
-             id = Integer.parseInt(message.getContents());
-        }catch (NumberFormatException e){
+        try {
+            id = Integer.parseInt(message);
+        } catch (NumberFormatException e) {
             onNfcError(new TagNotOursException());
+            return;
         }
+        activity.setLoadingText("Getting Item from server");
 
-        //TODO make network request with the tag content
         //init web stuff
-        //TODO this is to mock it out
-        WholeItem item = new WholeItem();
-        item.setItemDescription("This item is very useful because it is good and a very good item and so useful and this is why im going to tell why why nw am i not?");
-        item.setItemManufacture("Sample Manafacture");
-        item.setItemName("Example Name");
-        item.setShipmentName("Shipment 3");
-        item.setCampaignName("Aid for here");
-        item.setCampaignCreatorName("Red Cross");
-        item.setDestination("Bristol");
-        ItemTracking tracking = new ItemTracking(new Date(), "In the house", "Coventry");
-        item.setTrackings(Arrays.asList(tracking, tracking, tracking, tracking));
-        onGotProduct(item);
+        //first get the item details
+        NetworkManager.getInstance().getItemService().getItemById(id)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<OuterItem>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
 
+                    @Override
+                    public void onNext(OuterItem value) {
+                        getProductDetails(value.getItem());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onNetworkError("Item", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void getProductDetails(final Item item) {
+        activity.setLoadingText("Loading product details");
+
+        NetworkManager.getInstance().getProductService().getProductById(item.getProductId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Product>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Product value) {
+                        getShipmentDetails(item, value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onNetworkError("Product", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+
+    }
+
+    private void getShipmentDetails(final Item item, final Product product) {
+        activity.setLoadingText("Loading Shipment details");
+
+        NetworkManager.getInstance().getShipmentService().getShipmentById(item.getShipmentId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Shipment>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Shipment value) {
+                        getCampaignDetails(item, product, value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onNetworkError("shipment", e);
+                    }
+
+                    @Override
+                    public void onComplete() {}
+                });
+    }
+
+
+    private void getCampaignDetails(final Item item, final Product product, final Shipment shipment) {
+        activity.setLoadingText("Loading Shipment details");
+
+        NetworkManager.getInstance().getCampaignService().getCampaingById(shipment.getCampaignId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Campaign>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Campaign value) {
+                        onGotProduct(new WholeItem(value, shipment, item, product));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        onNetworkError("Camapign", e);
+                    }
+
+                    @Override
+                    public void onComplete() {}
+                });
+    }
+
+    private void onNetworkError(String name, Throwable e) {
+        Log.e(getClass().getSimpleName(), "Network error", e);
+        activity.setLoadingText("Error " + name + " ," + e.toString());
     }
 
     @Override
     public void onNfcError(Exception e) {
-        if (e instanceof TagNotOursException){
+        if (e instanceof TagNotOursException) {
             //goto page to add new tag
             activity.navigateToAddItemActivity();
-        }else if (e instanceof TagNotSupportedException){
+        } else if (e instanceof TagNotSupportedException) {
             //TODO show error on loading
         }
     }
 
+    public void onStop() {
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
+        }
+    }
 }

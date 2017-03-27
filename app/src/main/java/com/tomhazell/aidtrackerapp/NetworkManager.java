@@ -4,9 +4,12 @@ import com.tomhazell.aidtrackerapp.additem.Item;
 import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.CampaignService;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.ItemService;
+import com.tomhazell.aidtrackerapp.additem.fragments.networking.ManufacturesService;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.ProductService;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.ShipmentService;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -24,9 +27,16 @@ public class NetworkManager {
     private ShipmentService shipmentService;
     private ProductService productService;
     private ItemService itemService;
+    private ManufacturesService manufacturesService;
 
     private NetworkManager() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+
         retrofit = new Retrofit.Builder()
+                .client(client)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(BASE_URL)
@@ -40,6 +50,14 @@ public class NetworkManager {
         }
 
         return campaignService;
+    }
+
+    public ManufacturesService getManufacturesService(){
+        if (manufacturesService == null) {
+            manufacturesService = retrofit.create(ManufacturesService.class);
+        }
+
+        return manufacturesService;
     }
 
     public ShipmentService getShipmentService(){

@@ -2,6 +2,8 @@ package com.tomhazell.aidtrackerapp.additem;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by Tom Hazell on 27/02/2017.
  */
@@ -11,11 +13,16 @@ public class Product {
 
     @SerializedName(value="product_name")
     private String name;
-    private String type;
+
+    @SerializedName(value="product_description")
+    private String description;
+
+    @SerializedName(value = "manufacturer")
+    private Manufacturer manufacturer;
 
     public Product(String name, String type) {
         this.name = name;
-        this.type = type;
+        this.description = type;
     }
 
     public Product() {
@@ -37,11 +44,19 @@ public class Product {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getDescription() {
+        return description;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
     }
 }
