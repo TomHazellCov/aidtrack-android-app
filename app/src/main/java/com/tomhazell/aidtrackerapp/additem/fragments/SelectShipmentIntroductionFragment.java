@@ -174,7 +174,7 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
     @Override
     public boolean validateDetails() {
         if (gotExistingShipments) {
-            if (selectedShipment == null || layoutName.getEditText().getText().toString().equals(selectedShipment.getName())){
+            if (selectedShipment == null || !layoutName.getEditText().getText().toString().equals(selectedShipment.getName())){
                 if (hasCreatedShipment || isCreatingShipment){
                     return true;
                 }

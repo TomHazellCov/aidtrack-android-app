@@ -80,7 +80,6 @@
                 android:text="@string/select_shipment_error_creating"
                 android:visibility="invisible"/>
 
-
         </LinearLayout>
     </ViewSwitcher>
 </LinearLayout>

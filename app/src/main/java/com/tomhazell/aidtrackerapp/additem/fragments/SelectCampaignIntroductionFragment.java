@@ -147,7 +147,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     @Override
     public boolean validateDetails() {
         if (gotExistingCampaigns) {
-            if (selectedCampaign == null || layoutName.getEditText().getText().toString().equals(selectedCampaign.getName())) {//if selectedCampain is null then we are creating one or we have already created one
+            if (selectedCampaign == null || !layoutName.getEditText().getText().toString().equals(selectedCampaign.getName())) {//if selectedCampain is null then we are creating one or we have already created one
                 if (hasCreatedCampaign) {
                     return true;
                 }

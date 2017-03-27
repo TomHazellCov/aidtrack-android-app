@@ -1,11 +1,15 @@
 package com.tomhazell.aidtrackerapp.additem;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Tom Hazell on 27/02/2017.
  */
 
 public class Product {
+    private int id;
 
+    @SerializedName(value="product_name")
     private String name;
     private String type;
 
@@ -15,6 +19,14 @@ public class Product {
     }
 
     public Product() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

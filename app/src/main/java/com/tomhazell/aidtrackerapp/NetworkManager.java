@@ -1,6 +1,8 @@
 package com.tomhazell.aidtrackerapp;
 
+import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.CampaignService;
+import com.tomhazell.aidtrackerapp.additem.fragments.networking.ProductService;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.ShipmentService;
 
 import retrofit2.Retrofit;
@@ -17,6 +19,7 @@ public class NetworkManager {
 
     private CampaignService campaignService;
     private ShipmentService shipmentService;
+    private ProductService productService;
 
     private NetworkManager() {
         retrofit = new Retrofit.Builder()
@@ -42,6 +45,15 @@ public class NetworkManager {
 
         return shipmentService;
     }
+
+    public ProductService getProductService(){
+        if (productService == null) {
+            productService = retrofit.create(ProductService.class);
+        }
+
+        return productService;
+    }
+
 
     public static NetworkManager getInstance() {
         if (instance == null) {

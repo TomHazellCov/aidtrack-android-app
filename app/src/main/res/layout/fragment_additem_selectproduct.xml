@@ -21,11 +21,23 @@
                 android:id="@+id/select_product_progressbar" />
 
             <TextView
+                android:id="@+id/select_product_text"
                 android:text="@string/product_list_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/select_product_progressbar"
                 android:layout_centerHorizontal="true"/>
+
+            <Button
+                android:id="@+id/select_product_error_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/select_product_text"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="16dp"
+                android:text="@string/select_product_error"
+                android:visibility="invisible"/>
+
 
         </RelativeLayout>
 
@@ -69,6 +81,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/select_product_error_creating"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_product_error_creating"
+                android:visibility="invisible"/>
 
         </LinearLayout>
     </ViewSwitcher>
