@@ -84,6 +84,28 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:text="Error"
+                android:gravity="center_horizontal"
+                android:padding="16dp"/>
+
+            <Button
+                android:id="@+id/create_product_error_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tap to retry"
+                android:padding="16dp"/>
+
+        </LinearLayout>
+
     </ViewFlipper>
 
 </LinearLayout>

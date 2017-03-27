@@ -22,7 +22,6 @@ public class SummaryPresenter implements NfcCallback {
 
         //show loading stuff
         activity.setViewSwitcherItem(VIEW_LOADING);
-
     }
 
 
@@ -40,6 +39,14 @@ public class SummaryPresenter implements NfcCallback {
 
     @Override
     public void onGotNfcMessage(NfcTagDescription message) {
+        //TODO improve this by using a diffrent message type, but assume if tag is numeric it is ours
+        int id;
+        try{
+             id = Integer.parseInt(message.getContents());
+        }catch (NumberFormatException e){
+            onNfcError(new TagNotOursException());
+        }
+
         //TODO make network request with the tag content
         //init web stuff
         //TODO this is to mock it out

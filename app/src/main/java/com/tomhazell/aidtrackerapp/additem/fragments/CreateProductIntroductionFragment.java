@@ -14,17 +14,24 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.tomhazell.aidtrackerapp.NFCUtils;
+import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.R;
+import com.tomhazell.aidtrackerapp.additem.Item;
+import com.tomhazell.aidtrackerapp.additem.ItemResponse;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 import com.tomhazell.aidtrackerapp.summary.TagNotSupportedException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.Completable;
 import io.reactivex.CompletableEmitter;
 import io.reactivex.CompletableObserver;
 import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -46,11 +53,14 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
     private boolean itemCreated = false;
     private boolean tagWriten = false;
 
+    private ArrayList<Disposable> disposables = new ArrayList<>();
+
     @BindView(R.id.create_product_flipper)
     ViewFlipper flipper;
 
     @BindView(R.id.create_product_NFC_error)
     TextView nfcError;
+    private Item item;
 
     @Nullable
     @Override
@@ -61,13 +71,35 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
 
         //first get the item
         newItem = ((NewItemCallBack) getActivity()).getItem();
-
+        item = new Item("", newItem.getProduct().getId(), newItem.getCampaign().getId());
         //create the network request
-        //TODO mock it out
-        //write to tag
-        onSavedItem(123);
-
+        createItem(item);
         return v;
+    }
+
+    private void createItem(Item item) {
+        NetworkManager.getInstance().getItemService().createItem(item)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ItemResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(ItemResponse value) {
+                        onSavedItem(value.getInfo().getId());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        flipper.setDisplayedChild(FLIPPER_SCAN_ERROR);
+                    }
+
+                    @Override
+                    public void onComplete() {}
+                });
     }
 
     @Override
@@ -86,27 +118,26 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
                     }
                 }
             })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        //becuase this should not take long we will assume it wont stay for to long
-                        //TODO actualy consolidate this with the one from Rx retrofit
-                    }
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposables.add(d);
+                        }
 
-                    @Override
-                    public void onComplete() {
-                        flipper.setDisplayedChild(FLIPPER_SCAN_DONE);
-                        tagWriten = true;
-                    }
+                        @Override
+                        public void onComplete() {
+                            flipper.setDisplayedChild(FLIPPER_SCAN_DONE);
+                            tagWriten = true;
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(this.getClass().getSimpleName(), "Error writing to NFC tag", e);
-                        nfcError.setText("Error writing to NFC tag " + e.getClass().getSimpleName() + " try again...");
-                    }
-                });
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(this.getClass().getSimpleName(), "Error writing to NFC tag", e);
+                            nfcError.setText("Error writing to NFC tag " + e.getClass().getSimpleName() + " try again...");
+                        }
+                    });
         }
     }
 
@@ -117,6 +148,11 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
         this.id = id;
     }
 
+    @OnClick(R.id.create_product_error_button)
+    void onErrorClick(){
+        flipper.setDisplayedChild(FLIPPER_SCAN_START);
+        createItem(item);
+    }
 
     //All from ValidatedFragment
     @Override
@@ -138,5 +174,15 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
     public String getTitle() {
         return "Creating Tag...";
     }
+
+    @Override
+    public void onStop() {
+        //make sure all long running requests are stopped
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
+        }
+        super.onStop();
+    }
+
 
 }

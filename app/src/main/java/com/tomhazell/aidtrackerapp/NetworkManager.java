@@ -1,7 +1,9 @@
 package com.tomhazell.aidtrackerapp;
 
+import com.tomhazell.aidtrackerapp.additem.Item;
 import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.CampaignService;
+import com.tomhazell.aidtrackerapp.additem.fragments.networking.ItemService;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.ProductService;
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.ShipmentService;
 
@@ -14,18 +16,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NetworkManager {
+    public static final String BASE_URL = "http://api.aidtrack.donchev.net/index.php/api/";
     private static NetworkManager instance;
     private Retrofit retrofit;
 
     private CampaignService campaignService;
     private ShipmentService shipmentService;
     private ProductService productService;
+    private ItemService itemService;
 
     private NetworkManager() {
         retrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://api.aidtrack.donchev.net/index.php/api/")
+                .baseUrl(BASE_URL)
                 .build();
 
     }
@@ -52,6 +56,14 @@ public class NetworkManager {
         }
 
         return productService;
+    }
+
+    public ItemService getItemService(){
+        if (itemService == null) {
+            itemService = retrofit.create(ItemService.class);
+        }
+
+        return itemService;
     }
 
 
