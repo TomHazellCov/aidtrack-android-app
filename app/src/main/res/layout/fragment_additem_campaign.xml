@@ -11,7 +11,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
             <ProgressBar
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="wrap_content"
@@ -21,11 +21,22 @@
                 android:id="@+id/select_campaign_progressbar" />
 
             <TextView
+                android:id="@+id/select_campaign_text"
                 android:text="@string/campaign_list_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/select_campaign_progressbar"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible"/>
+
+            <Button
+                android:id="@+id/select_campaign_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/select_campaign_text"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="16dp"
+                android:text="@string/select_campaign_error"/>
 
         </RelativeLayout>
 
@@ -34,16 +45,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:text="@string/select_campaign_select"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:prompt="@string/select_campaign_select"
                 android:id="@+id/select_campaign_campaigns"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:spinnerMode="dropdown"/>
 
 
             <android.support.design.widget.TextInputLayout

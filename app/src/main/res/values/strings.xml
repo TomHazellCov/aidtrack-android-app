@@ -11,4 +11,5 @@
     <string name="campaign_list_loading">Loading all campaigns</string>
     <string name="shipment_list_loading">Loading...</string>
     <string name="select_shipment_select">Select A Shipment</string>
+    <string name="select_campaign_error">Failed to get all existing campains check internet and try again</string>
 </resources>

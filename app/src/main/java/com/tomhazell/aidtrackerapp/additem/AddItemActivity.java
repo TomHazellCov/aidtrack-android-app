@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.tomhazell.aidtrackerapp.R;
+import com.tomhazell.aidtrackerapp.additem.fragments.CreateProductIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewItemCallBack;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewTagIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.NfcListener;
@@ -23,7 +24,6 @@ import com.tomhazell.aidtrackerapp.additem.fragments.SelectCampaignIntroductionF
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectProductIntroductonFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectShipmentIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.ValidatedFragment;
-import com.tomhazell.aidtrackerapp.additem.fragments.WriteTagIntroductionFragment;
 import com.tomhazell.aidtrackerapp.widget.UnscrollableViewPager;
 
 import java.util.ArrayList;
@@ -80,8 +80,7 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
         fragments.add(new SelectProductIntroductonFragment());
         fragments.add(new SelectCampaignIntroductionFragment());
         fragments.add(new SelectShipmentIntroductionFragment());
-        //select Shipment
-//        fragments.add(new WriteTagIntroductionFragment());
+        fragments.add(new CreateProductIntroductionFragment());
 
         presenter = new AddItemPresenter(this, fragments.size());
         setDefaultTitle();

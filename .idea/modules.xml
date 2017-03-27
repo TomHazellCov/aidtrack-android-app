@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AidTrackerApp.iml" filepath="$PROJECT_DIR$/AidTrackerApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/aidtrack-android-app.iml" filepath="$PROJECT_DIR$/aidtrack-android-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
