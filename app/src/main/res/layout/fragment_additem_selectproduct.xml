@@ -43,7 +43,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/select_product_products"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:spinnerMode="dropdown"/>
 
 
             <android.support.design.widget.TextInputLayout

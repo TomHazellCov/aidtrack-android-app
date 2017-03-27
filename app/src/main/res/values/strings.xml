@@ -12,4 +12,7 @@
     <string name="shipment_list_loading">Loading...</string>
     <string name="select_shipment_select">Select A Shipment</string>
     <string name="select_campaign_error">Failed to get all existing campains check internet and try again</string>
+    <string name="select_shipments_error">Cant get list of shipments try again?</string>
+    <string name="select_campaign_error_creating">Failed to create campaign, hit next to try again (check your internet)</string>
+    <string name="select_shipment_error_creating">Failed to create shipment, tap next to try again</string>
 </resources>

@@ -21,11 +21,23 @@
                 android:id="@+id/select_shipment_progressbar" />
 
             <TextView
+                android:id="@+id/select_shipment_text"
                 android:text="@string/shipment_list_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/select_shipment_progressbar"
                 android:layout_centerHorizontal="true"/>
+
+            <Button
+                android:id="@+id/select_shipment_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/select_shipment_text"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="16dp"
+                android:text="@string/select_shipments_error"
+                android:visibility="invisible"/>
+
 
         </RelativeLayout>
 
@@ -43,7 +55,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/select_shipment_shipments"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:spinnerMode="dropdown"/>
 
 
             <android.support.design.widget.TextInputLayout
@@ -56,6 +70,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/select_shipment_error_creating"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_shipment_error_creating"
+                android:visibility="invisible"/>
+
 
         </LinearLayout>
     </ViewSwitcher>

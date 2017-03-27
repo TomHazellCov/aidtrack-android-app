@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatSpinner;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.tomhazell.aidtrackerapp.NetworkManager;
@@ -21,6 +21,8 @@ import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -51,8 +52,11 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     @BindView(R.id.select_campaign_error)
     Button errorButton;
 
+    @BindView(R.id.select_campaign_error_creating)
+    TextView errorTextCreating;
+
     boolean gotExistingCampaigns = false;//have we received a list of campaigns
-    boolean isCreatingCampaign = true;//is the user creating a new product or using an existing one
+    boolean isCreatingCampaign = false;//is the user creating a new product or using an existing one
     boolean hasCreatedCampaign = false;
 
     private List<Campaign> campaigns;
@@ -159,7 +163,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
 
                 Campaign newCampaign = new Campaign(layoutName.getEditText().getText().toString());
 
-                createProduct(newCampaign);
+                createCampaign(newCampaign);
                 return false;
 
             } else {
@@ -173,7 +177,8 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     /**
      * calls the API to create a new product
      */
-    private void createProduct(Campaign newCampaign) {
+    private void createCampaign(Campaign newCampaign) {
+        errorTextCreating.setVisibility(View.INVISIBLE);
         isCreatingCampaign = true;
         NetworkManager.getInstance().getCampaignService().createCampain(newCampaign)
                 .subscribeOn(Schedulers.newThread())
@@ -192,7 +197,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
 
                     @Override
                     public void onError(Throwable e) {
-                        errorButton.setVisibility(View.VISIBLE);
+                        errorTextCreating.setVisibility(View.VISIBLE);
                         Log.e(getClass().getSimpleName(), "Failed to get Campains", e);
                         isCreatingCampaign = false;
                     }

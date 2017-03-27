@@ -10,11 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
+import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
 
@@ -23,6 +27,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Tom Hazell on 21/03/2017.
@@ -38,12 +47,21 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
     @BindView(R.id.select_shipment_shipments)
     Spinner selectShipment;
 
+    @BindView(R.id.select_shipment_error)
+    Button errorButton;
+
+    @BindView(R.id.select_shipment_error_creating)
+    TextView errorTextCreating;
+
     boolean gotExistingShipments = false;//have we received a list of shipments
-    boolean isCreatingShipments = true;//is the user creating a new product or using an existing one
+    boolean isCreatingShipment = false;//is the user creating a new product or using an existing one
     boolean hasCreatedShipment = false;
 
     private List<Shipment> shipments;
     private Shipment selectedShipment;
+
+    private List<Disposable> disposables = new ArrayList<>();
+
 
     @Nullable
     @Override
@@ -52,7 +70,9 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
         ButterKnife.bind(this, v);
 
         selectShipment.setOnItemSelectedListener(this);
-        //create web request (mock out from now)
+        //create web request
+
+        getAllShipments();
         List<Shipment> shipments = new ArrayList<>();
         shipments.add(new Shipment("Name"));
         shipments.add(new Shipment("Name1"));
@@ -61,11 +81,39 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
         return v;
     }
 
+    public void getAllShipments() {
+        NetworkManager.getInstance().getShipmentService().getAllShipments()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Shipment>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<Shipment> value) {
+                        onGotShipments(value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorButton.setVisibility(View.VISIBLE);
+                        Log.e(getClass().getSimpleName(), "Failed to get Campains", e);
+                    }
+
+                    @Override
+                    public void onComplete() {}
+                });
+    }
+
+
     void onGotShipments(List<Shipment> shipments) {
         if (gotExistingShipments) {
             Log.w(this.getClass().getSimpleName(), "We got Shipments twice we should not be here");
             return;
         }
+
         gotExistingShipments = true;
         this.shipments = shipments;
         viewSwitcher.showNext();//show content not the progressbar
@@ -84,11 +132,50 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
         selectShipment.setSelection(0);
     }
 
+    /**
+     * calls the API to create a new product
+     */
+    private void createShipment(Shipment shipment) {
+        errorTextCreating.setVisibility(View.INVISIBLE);
+        isCreatingShipment = true;
+        NetworkManager.getInstance().getShipmentService().createShipment(shipment)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Shipment>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Shipment value) {
+                        onShipmentCreated(value);
+                        isCreatingShipment = false;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errorTextCreating.setVisibility(View.VISIBLE);
+                        Log.e(getClass().getSimpleName(), "Failed to get Campains", e);
+                        isCreatingShipment = false;
+                    }
+
+                    @Override
+                    public void onComplete() {}
+                });
+    }
+
+
+    @OnClick(R.id.select_shipment_error)
+    void onErrorClicked(){
+        getAllShipments();
+    }
+
     @Override
     public boolean validateDetails() {
         if (gotExistingShipments) {
-            if (isCreatingShipments){
-                if (hasCreatedShipment){
+            if (selectedShipment == null || layoutName.getEditText().getText().toString().equals(selectedShipment.getName())){
+                if (hasCreatedShipment || isCreatingShipment){
                     return true;
                 }
 
@@ -97,8 +184,14 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
                     layoutName.setError("Cant be empty");
                     return false;
                 }
+                if (! (getActivity() instanceof NewItemCallBack)){
+                    Log.e(getClass().getSimpleName(), "Activity dose not inherit NewItemCaLLBACK...? BAD THINGS");
+                    return false;
+                }
 
-                //createProduct api call, then call onproductCreated TODO
+                Shipment newShip = new Shipment(layoutName.getEditText().getText().toString());
+                newShip.setCampaignId(((NewItemCallBack) getActivity()).getItem().getCampaign().getId());
+                createShipment(newShip);
                 return false;
 
             }else{
@@ -135,12 +228,10 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         if (pos == 0){
-            isCreatingShipments = true;
             layoutName.setVisibility(View.VISIBLE);
 
             selectedShipment = null;
         }else{
-            isCreatingShipments = false;
             layoutName.setVisibility(View.INVISIBLE);
 
             selectedShipment = shipments.get(pos - 1);
@@ -152,4 +243,15 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
     public void onNothingSelected(AdapterView<?> adapterView) {
         //do nothing
     }
+
+    @Override
+    public void onStop() {
+        //make sure all long running requests are stopped
+        for (Disposable disposable : disposables) {
+            disposable.dispose();
+        }
+        super.onStop();
+    }
+
+
 }

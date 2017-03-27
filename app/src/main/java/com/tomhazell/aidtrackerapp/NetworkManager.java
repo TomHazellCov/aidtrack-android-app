@@ -1,6 +1,7 @@
 package com.tomhazell.aidtrackerapp;
 
 import com.tomhazell.aidtrackerapp.additem.fragments.networking.CampaignService;
+import com.tomhazell.aidtrackerapp.additem.fragments.networking.ShipmentService;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -15,6 +16,7 @@ public class NetworkManager {
     private Retrofit retrofit;
 
     private CampaignService campaignService;
+    private ShipmentService shipmentService;
 
     private NetworkManager() {
         retrofit = new Retrofit.Builder()
@@ -31,6 +33,14 @@ public class NetworkManager {
         }
 
         return campaignService;
+    }
+
+    public ShipmentService getShipmentService(){
+        if (shipmentService == null) {
+            shipmentService = retrofit.create(ShipmentService.class);
+        }
+
+        return shipmentService;
     }
 
     public static NetworkManager getInstance() {

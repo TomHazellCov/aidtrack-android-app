@@ -36,6 +36,7 @@
                 android:layout_below="@+id/select_campaign_text"
                 android:layout_centerHorizontal="true"
                 android:paddingTop="16dp"
+                android:visibility="invisible"
                 android:text="@string/select_campaign_error"/>
 
         </RelativeLayout>
@@ -65,6 +66,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/select_campaign_error_creating"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_campaign_error_creating"
+                android:visibility="invisible"/>
 
         </LinearLayout>
     </ViewSwitcher>
