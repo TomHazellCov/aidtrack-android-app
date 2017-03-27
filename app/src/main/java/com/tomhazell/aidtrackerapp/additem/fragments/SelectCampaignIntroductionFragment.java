@@ -19,9 +19,8 @@ import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 import com.tomhazell.aidtrackerapp.additem.Campaign;
+import com.tomhazell.aidtrackerapp.additem.CampaignResponse;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,18 +179,18 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     private void createCampaign(Campaign newCampaign) {
         errorTextCreating.setVisibility(View.INVISIBLE);
         isCreatingCampaign = true;
-        NetworkManager.getInstance().getCampaignService().createCampain(newCampaign)
+        NetworkManager.getInstance().getCampaignService().createCampaign(newCampaign)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Campaign>() {
+                .subscribe(new Observer<CampaignResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposables.add(d);
                     }
 
                     @Override
-                    public void onNext(Campaign value) {
-                        onCampaignCreated(value);
+                    public void onNext(CampaignResponse value) {
+                        onCampaignCreated(value.getInfo());
                         isCreatingCampaign = false;
                     }
 

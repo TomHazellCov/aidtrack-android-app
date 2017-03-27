@@ -21,6 +21,7 @@ import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
+import com.tomhazell.aidtrackerapp.additem.ShipmentResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,15 +142,15 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
         NetworkManager.getInstance().getShipmentService().createShipment(shipment)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Shipment>() {
+                .subscribe(new Observer<ShipmentResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposables.add(d);
                     }
 
                     @Override
-                    public void onNext(Shipment value) {
-                        onShipmentCreated(value);
+                    public void onNext(ShipmentResponse value) {
+                        onShipmentCreated(value.getInfo());
                         isCreatingShipment = false;
                     }
 

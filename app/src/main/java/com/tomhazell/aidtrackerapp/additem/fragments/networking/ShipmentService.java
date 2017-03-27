@@ -2,6 +2,7 @@ package com.tomhazell.aidtrackerapp.additem.fragments.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
+import com.tomhazell.aidtrackerapp.additem.ShipmentResponse;
 
 import java.util.List;
 
@@ -24,5 +25,5 @@ public interface ShipmentService {
     Observable<List<Shipment>> getAllShipments();
 
     @POST("v1/shipments")
-    Observable<Shipment> createShipment(@Body Shipment shipment);
+    Observable<ShipmentResponse> createShipment(@Body Shipment shipment);
 }

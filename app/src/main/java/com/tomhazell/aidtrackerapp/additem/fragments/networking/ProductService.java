@@ -1,6 +1,7 @@
 package com.tomhazell.aidtrackerapp.additem.fragments.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Product;
+import com.tomhazell.aidtrackerapp.additem.ProductResponse;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
 
 import java.util.List;
@@ -24,5 +25,5 @@ public interface ProductService {
     Observable<List<Product>> getAllProducts();
 
     @POST("v1/products")
-    Observable<Product> createProduct(@Body Product product);
+    Observable<ProductResponse> createProduct(@Body Product product);
 }

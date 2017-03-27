@@ -21,6 +21,7 @@ import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 import com.tomhazell.aidtrackerapp.additem.Product;
+import com.tomhazell.aidtrackerapp.additem.ProductResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,15 +180,15 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         NetworkManager.getInstance().getProductService().createProduct(product)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Product>() {
+                .subscribe(new Observer<ProductResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposables.add(d);
                     }
 
                     @Override
-                    public void onNext(Product value) {
-                        onProductCreated(value);
+                    public void onNext(ProductResponse value) {
+                        onProductCreated(value.getInfo());
                         isCreateingProduct = false;
                     }
 

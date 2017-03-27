@@ -1,6 +1,7 @@
 package com.tomhazell.aidtrackerapp.additem.fragments.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Campaign;
+import com.tomhazell.aidtrackerapp.additem.CampaignResponse;
 
 import java.util.List;
 
@@ -8,7 +9,6 @@ import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 /**
@@ -24,5 +24,5 @@ public interface CampaignService {
     Observable<List<Campaign>> getAllCampaigns();
 
     @POST("v1/campaigns")
-    Observable<Campaign> createCampain(@Body Campaign campaign);
+    Observable<CampaignResponse> createCampaign(@Body Campaign campaign);
 }
