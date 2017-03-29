@@ -6,5 +6,5 @@ package com.tomhazell.aidtrackerapp.summary;
  * Used when the tag is ndef but it is not formatted to our type
  */
 
-public class TagNotOursException extends Exception {
+public class TagNotOursOrUnformatedException extends Exception {
 }

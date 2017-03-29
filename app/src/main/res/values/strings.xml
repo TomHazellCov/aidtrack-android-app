@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">AidTrackerApp</string>
+    <string name="app_name">Aid Tracker</string>
     <string name="back">Back</string>
     <string name="next">Next</string>
     <string name="add_item_title">Add an item</string>
     <string name="finish">Finish</string>
-    <string name="add_item_intro">Use the buttons bellow to navigate through adding a new item, press next to begin!</string>
+    <string name="add_item_intro">Use the buttons bellow to navigate through adding a new item, to view details about an existing tag just close this and scan the tag.</string>
     <string name="product_list_loading">Getting list of products....</string>
     <string name="select_product_select">Select a product</string>
     <string name="select_campaign_select">Select a campagin or add a new one</string>
@@ -18,4 +18,6 @@
     <string name="select_product_error">Failed to get list of products tap to retry</string>
     <string name="select_product_error_creating">Failed to create prodcut tap next to try again</string>
     <string name="select_manufacturer_select">Select A Manufacturer</string>
+    <string name="additem_intro_text_newTag">New tag discovered, use the buttons below to add a new item.</string>
+    <string name="additem_intro_text_badid">NFC tag found but it dose not appear to have been used for Air Track before, use the buttons below to add a new item</string>
 </resources>

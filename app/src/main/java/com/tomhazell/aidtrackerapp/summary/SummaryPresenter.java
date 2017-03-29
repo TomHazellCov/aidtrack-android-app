@@ -4,7 +4,6 @@ import android.nfc.Tag;
 import android.util.Log;
 
 import com.tomhazell.aidtrackerapp.NetworkManager;
-import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.Item;
 import com.tomhazell.aidtrackerapp.additem.OuterCampaign;
 import com.tomhazell.aidtrackerapp.additem.OuterItem;
@@ -13,14 +12,13 @@ import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 /**
  * Created by Tom Hazell on 07/03/2017.
@@ -63,7 +61,7 @@ public class SummaryPresenter implements NfcCallback {
         try {
             id = Integer.parseInt(message);
         } catch (NumberFormatException e) {
-            onNfcError(new TagNotOursException());
+            onNfcError(new TagNotOursOrUnformatedException());
             return;
         }
         activity.setLoadingText("Getting Item from server");
@@ -182,16 +180,25 @@ public class SummaryPresenter implements NfcCallback {
 
     private void onNetworkError(String name, Throwable e) {
         Log.e(getClass().getSimpleName(), "Network error", e);
+
+        if (e instanceof HttpException){
+            HttpException httpException = (HttpException) e;
+            if (httpException.code() == 404) {
+                activity.navigateToAddItemActivityWithUnrecognisedData();
+                return;
+            }
+        }
         activity.setLoadingText("Error " + name + " ," + e.toString());
     }
 
     @Override
     public void onNfcError(Exception e) {
-        if (e instanceof TagNotOursException) {
+        if (e instanceof TagNotOursOrUnformatedException) {
             //goto page to add new tag
-            activity.navigateToAddItemActivity();
+            activity.navigateToAddItemActivityWithNewTag();
         } else if (e instanceof TagNotSupportedException) {
-            //TODO show error on loading
+            Log.wtf(getClass().getSimpleName(), "Tag not supported how did we get here?");
+            activity.finish();
         }
     }
 

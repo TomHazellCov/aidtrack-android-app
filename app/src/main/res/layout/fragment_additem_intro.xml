@@ -5,6 +5,7 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/additem_intro_title"
         android:text="@string/add_item_intro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

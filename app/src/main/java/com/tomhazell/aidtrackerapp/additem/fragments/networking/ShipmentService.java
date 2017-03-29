@@ -16,7 +16,6 @@ import retrofit2.http.Path;
 /**
  * Created by Tom Hazell on 26/03/2017.
  */
-
 public interface ShipmentService {
 
     @GET("v1/shipments/id/{id}")

@@ -23,6 +23,8 @@ import butterknife.ButterKnife;
 //TODO handle when refered form newItem thing
 public class SummaryActivity extends AppCompatActivity {
 
+    public static final String EXTRA_NEW_TAG = "BLANK_NFCTAG_FOUND";
+    public static final String EXTRA_TAG_BADID = "NFCTAG_FOUND_DATA_NOT_ON_SERVER";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -77,8 +79,8 @@ public class SummaryActivity extends AppCompatActivity {
 
         presenter = new SummaryPresenter(this, "1");//TODO in future get id from tag...
 
-//        handleIntent(getIntent());
-        presenter.onGotNfcMessage("2");
+        handleIntent(getIntent());
+//        presenter.onGotNfcMessage("2");
 
     }
 
@@ -136,8 +138,16 @@ public class SummaryActivity extends AppCompatActivity {
 
     }
 
-    void navigateToAddItemActivity() {
+    void navigateToAddItemActivityWithUnrecognisedData() {
         Intent i = new Intent(SummaryActivity.this, AddItemActivity.class);
+        i.putExtra(EXTRA_TAG_BADID, true);
+        startActivity(i);
+        finish();
+    }
+
+    void navigateToAddItemActivityWithNewTag() {
+        Intent i = new Intent(SummaryActivity.this, AddItemActivity.class);
+        i.putExtra(EXTRA_NEW_TAG, true);
         startActivity(i);
         finish();
     }

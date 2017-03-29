@@ -35,10 +35,14 @@ public class NdefReaderTask extends AsyncTask<Tag, Void, NdefRecord> {
             return null;
         } else if (ndef == null) {
             //NDEF is supported but it is formatted incorrectly
-            exception = new TagNotOursException();
+            exception = new TagNotOursOrUnformatedException();
             return null;
         } else {
             NdefMessage ndefMessage = ndef.getCachedNdefMessage();
+            if (ndefMessage == null){//Meaning tag has been initilised but not formated with data
+                exception = new TagNotOursOrUnformatedException();
+                return null;
+            }
 
             NdefRecord[] records = ndefMessage.getRecords();
             for (NdefRecord ndefRecord : records) {
@@ -47,7 +51,7 @@ public class NdefReaderTask extends AsyncTask<Tag, Void, NdefRecord> {
                 }
             }
 
-            exception = new TagNotOursException();
+            exception = new TagNotOursOrUnformatedException();
             return null;
         }
     }

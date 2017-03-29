@@ -24,6 +24,7 @@ import com.tomhazell.aidtrackerapp.additem.fragments.SelectCampaignIntroductionF
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectProductIntroductonFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.SelectShipmentIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.ValidatedFragment;
+import com.tomhazell.aidtrackerapp.summary.SummaryActivity;
 import com.tomhazell.aidtrackerapp.widget.UnscrollableViewPager;
 
 import java.util.ArrayList;
@@ -75,8 +76,21 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        //get Bundle
+        boolean newTag = getIntent().getBooleanExtra(SummaryActivity.EXTRA_NEW_TAG, false);
+        boolean badDataTag = getIntent().getBooleanExtra(SummaryActivity.EXTRA_TAG_BADID, false);
+
+        //create bundle for introFragment
+        Bundle introBundle = new Bundle();
+        introBundle.putBoolean(SummaryActivity.EXTRA_NEW_TAG, newTag);
+        introBundle.putBoolean(SummaryActivity.EXTRA_TAG_BADID, badDataTag);
+
+        //add bundle to fragment
+        NewTagIntroductionFragment introductionFragment = new NewTagIntroductionFragment();
+        introductionFragment.setArguments(introBundle);
+
         //first add all framgnets
-        fragments.add(new NewTagIntroductionFragment());
+        fragments.add(introductionFragment);
         fragments.add(new SelectProductIntroductonFragment());
         fragments.add(new SelectCampaignIntroductionFragment());
         fragments.add(new SelectShipmentIntroductionFragment());
@@ -105,6 +119,7 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
             public void onPageScrollStateChanged(int state) {
             }
         });
+
     }
 
     @Override
