@@ -1,8 +1,7 @@
-package com.tomhazell.aidtrackerapp.additem.fragments.networking;
+package com.tomhazell.aidtrackerapp.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Manufacturer;
 import com.tomhazell.aidtrackerapp.additem.Product;
-import com.tomhazell.aidtrackerapp.additem.ProductResponse;
 
 import java.util.List;
 

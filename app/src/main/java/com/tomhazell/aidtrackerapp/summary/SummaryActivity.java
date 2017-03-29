@@ -5,26 +5,31 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.tomhazell.aidtrackerapp.R;
+import com.tomhazell.aidtrackerapp.addhistory.AddHistoryActivity;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 //TODO handle when refered form newItem thing
 public class SummaryActivity extends AppCompatActivity {
 
     public static final String EXTRA_NEW_TAG = "BLANK_NFCTAG_FOUND";
     public static final String EXTRA_TAG_BADID = "NFCTAG_FOUND_DATA_NOT_ON_SERVER";
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -58,6 +63,9 @@ public class SummaryActivity extends AppCompatActivity {
     @BindView(R.id.summary_loading_text)
     TextView loadingText;
 
+    @BindView(R.id.summaryTrackingRefresh)
+    ImageView refreshIcon;
+
     ItemHistoryAdapter adapter;
 
     SummaryPresenter presenter;
@@ -80,7 +88,7 @@ public class SummaryActivity extends AppCompatActivity {
         presenter = new SummaryPresenter(this, "1");//TODO in future get id from tag...
 
         handleIntent(getIntent());
-//        presenter.onGotNfcMessage("2");
+//        presenter.onGotNfcMessage("2");For debuging if needed
 
     }
 
@@ -88,6 +96,12 @@ public class SummaryActivity extends AppCompatActivity {
     protected void onStop() {
         presenter.onStop();
         super.onStop();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        refreshTrackingData();
     }
 
     void displayItemData(WholeItem item) {
@@ -152,7 +166,33 @@ public class SummaryActivity extends AppCompatActivity {
         finish();
     }
 
-    void setLoadingText(String text){
+    void setLoadingText(String text) {
         loadingText.setText(text);
+    }
+
+    void setTrackingIcon(boolean error, boolean working) {
+        if (error) {
+            refreshIcon.setColorFilter(ContextCompat.getColor(this, R.color.error));
+        } else {
+            refreshIcon.setColorFilter(null);
+        }
+
+        if (working) {
+            refreshIcon.setImageResource(R.drawable.ic_close_black_48dp);
+        }else{
+            refreshIcon.setImageResource(R.drawable.ic_refresh_black_48dp);
+        }
+    }
+
+    @OnClick(R.id.summaryAddHistory)
+    public void onAddHistoryClicked() {
+        Intent i = new Intent(SummaryActivity.this, AddHistoryActivity.class);
+        i.putExtra(AddHistoryActivity.EXTRA_ITEM_ID, presenter.getItemId());
+        startActivity(i);
+    }
+
+    @OnClick(R.id.summaryTrackingRefresh)
+    public void refreshTrackingData() {
+        presenter.updateItemHistory();
     }
 }

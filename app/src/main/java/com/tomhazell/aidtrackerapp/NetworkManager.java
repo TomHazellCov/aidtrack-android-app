@@ -1,12 +1,11 @@
 package com.tomhazell.aidtrackerapp;
 
-import com.tomhazell.aidtrackerapp.additem.Item;
-import com.tomhazell.aidtrackerapp.additem.Product;
-import com.tomhazell.aidtrackerapp.additem.fragments.networking.CampaignService;
-import com.tomhazell.aidtrackerapp.additem.fragments.networking.ItemService;
-import com.tomhazell.aidtrackerapp.additem.fragments.networking.ManufacturesService;
-import com.tomhazell.aidtrackerapp.additem.fragments.networking.ProductService;
-import com.tomhazell.aidtrackerapp.additem.fragments.networking.ShipmentService;
+import com.tomhazell.aidtrackerapp.networking.CampaignService;
+import com.tomhazell.aidtrackerapp.networking.ItemHistoryService;
+import com.tomhazell.aidtrackerapp.networking.ItemService;
+import com.tomhazell.aidtrackerapp.networking.ManufacturesService;
+import com.tomhazell.aidtrackerapp.networking.ProductService;
+import com.tomhazell.aidtrackerapp.networking.ShipmentService;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -28,6 +27,7 @@ public class NetworkManager {
     private ProductService productService;
     private ItemService itemService;
     private ManufacturesService manufacturesService;
+    private ItemHistoryService itemHistoryService;
 
     private NetworkManager() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -82,6 +82,14 @@ public class NetworkManager {
         }
 
         return itemService;
+    }
+
+    public ItemHistoryService getItemHisotryService(){
+        if (itemHistoryService == null) {
+            itemHistoryService = retrofit.create(ItemHistoryService.class);
+        }
+
+        return itemHistoryService;
     }
 
 

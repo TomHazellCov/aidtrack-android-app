@@ -1,5 +1,7 @@
 package com.tomhazell.aidtrackerapp.additem;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Tom Hazell on 27/03/2017.
  */
@@ -7,6 +9,7 @@ package com.tomhazell.aidtrackerapp.additem;
 public class ItemHistory {
 
     private int id;
+    @SerializedName(value = "item_id")
     private int itemId;
     private String status;
     private Double latitude;

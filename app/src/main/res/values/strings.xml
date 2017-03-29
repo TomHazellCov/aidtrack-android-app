@@ -20,4 +20,6 @@
     <string name="select_manufacturer_select">Select A Manufacturer</string>
     <string name="additem_intro_text_newTag">New tag discovered, use the buttons below to add a new item.</string>
     <string name="additem_intro_text_badid">NFC tag found but it dose not appear to have been used for Air Track before, use the buttons below to add a new item</string>
+    <string name="add_history_title">Item Status Details</string>
+    <string name="add_history_location_title">Location</string>
 </resources>

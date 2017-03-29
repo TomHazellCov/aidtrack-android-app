@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.additem.Item;
+import com.tomhazell.aidtrackerapp.additem.ItemHistory;
 import com.tomhazell.aidtrackerapp.additem.OuterCampaign;
 import com.tomhazell.aidtrackerapp.additem.OuterItem;
 import com.tomhazell.aidtrackerapp.additem.OuterShipment;
@@ -30,6 +31,7 @@ public class SummaryPresenter implements NfcCallback {
     private String tagId;
     private SummaryActivity activity;
     private WholeItem item;
+    private boolean isUpdating = false;
 
     private List<Disposable> disposables = new ArrayList<>();
 
@@ -146,7 +148,8 @@ public class SummaryPresenter implements NfcCallback {
                     }
 
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {
+                    }
                 });
     }
 
@@ -174,14 +177,15 @@ public class SummaryPresenter implements NfcCallback {
                     }
 
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {
+                    }
                 });
     }
 
     private void onNetworkError(String name, Throwable e) {
         Log.e(getClass().getSimpleName(), "Network error", e);
 
-        if (e instanceof HttpException){
+        if (e instanceof HttpException) {
             HttpException httpException = (HttpException) e;
             if (httpException.code() == 404) {
                 activity.navigateToAddItemActivityWithUnrecognisedData();
@@ -202,9 +206,54 @@ public class SummaryPresenter implements NfcCallback {
         }
     }
 
+    public void updateItemHistory() {
+        if (isUpdating) {
+            for (Disposable disposable : disposables) {
+                disposable.dispose();
+            }
+
+            activity.setTrackingIcon(false, false);
+            isUpdating = false;
+            return;
+        }
+        activity.setTrackingIcon(false, true);
+        NetworkManager.getInstance().getItemHisotryService().getItemHistoryByItemId(item.getItem().getId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<ItemHistory>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposables.add(d);
+                        isUpdating = true;
+                    }
+
+                    @Override
+                    public void onNext(List<ItemHistory> value) {
+                        item.getItem().setHistory(value);
+                        activity.displayItemData(item);
+                        activity.setTrackingIcon(false, false);
+                        isUpdating = false;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        activity.setTrackingIcon(true, false);
+                        isUpdating = false;
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
     public void onStop() {
         for (Disposable disposable : disposables) {
             disposable.dispose();
         }
+    }
+
+    public int getItemId() {
+        return item.getItem().getId();
     }
 }

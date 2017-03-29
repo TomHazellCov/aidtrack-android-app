@@ -1,12 +1,8 @@
-package com.tomhazell.aidtrackerapp.additem.fragments.networking;
+package com.tomhazell.aidtrackerapp.networking;
 
-import com.tomhazell.aidtrackerapp.additem.Campaign;
-import com.tomhazell.aidtrackerapp.additem.CampaignResponse;
 import com.tomhazell.aidtrackerapp.additem.Item;
 import com.tomhazell.aidtrackerapp.additem.ItemResponse;
 import com.tomhazell.aidtrackerapp.additem.OuterItem;
-
-import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;

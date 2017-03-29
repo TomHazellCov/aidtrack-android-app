@@ -1,4 +1,4 @@
-package com.tomhazell.aidtrackerapp.additem.fragments.networking;
+package com.tomhazell.aidtrackerapp.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.CampaignResponse;
