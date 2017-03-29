@@ -6,7 +6,9 @@ import android.util.Log;
 import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.Item;
+import com.tomhazell.aidtrackerapp.additem.OuterCampaign;
 import com.tomhazell.aidtrackerapp.additem.OuterItem;
+import com.tomhazell.aidtrackerapp.additem.OuterShipment;
 import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
 
@@ -129,15 +131,15 @@ public class SummaryPresenter implements NfcCallback {
         NetworkManager.getInstance().getShipmentService().getShipmentById(item.getShipmentId())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Shipment>() {
+                .subscribe(new Observer<OuterShipment>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposables.add(d);
                     }
 
                     @Override
-                    public void onNext(Shipment value) {
-                        getCampaignDetails(item, product, value);
+                    public void onNext(OuterShipment value) {
+                        getCampaignDetails(item, product, value.getShipment().get(0));
                     }
 
                     @Override
@@ -157,15 +159,15 @@ public class SummaryPresenter implements NfcCallback {
         NetworkManager.getInstance().getCampaignService().getCampaingById(shipment.getCampaignId())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Campaign>() {
+                .subscribe(new Observer<OuterCampaign>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposables.add(d);
                     }
 
                     @Override
-                    public void onNext(Campaign value) {
-                        onGotProduct(new WholeItem(value, shipment, item, product));
+                    public void onNext(OuterCampaign value) {
+                        onGotProduct(new WholeItem(value.getCampaign(), shipment, item, product));
                     }
 
                     @Override

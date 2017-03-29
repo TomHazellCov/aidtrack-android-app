@@ -2,6 +2,7 @@ package com.tomhazell.aidtrackerapp.additem.fragments.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Campaign;
 import com.tomhazell.aidtrackerapp.additem.CampaignResponse;
+import com.tomhazell.aidtrackerapp.additem.OuterCampaign;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import retrofit2.http.Path;
 public interface CampaignService {
 
     @GET("v1/campaigns/id/{id}")
-    Observable<Campaign> getCampaingById(@Path("id") int id);
+    Observable<OuterCampaign> getCampaingById(@Path("id") int id);
 
     @GET("v1/campaigns")
     Observable<List<Campaign>> getAllCampaigns();

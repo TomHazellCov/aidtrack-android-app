@@ -86,6 +86,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         ButterKnife.bind(this, v);
 
         selectProduct.setOnItemSelectedListener(this);
+        manufactureSelect.setOnItemSelectedListener(this);
         //create web request
         getProducts();
 
@@ -161,7 +162,9 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
 
         //add all products to it
         for (Product product : products) {
-            adapter.add(product.getName());
+            if (product.getName() != null) {
+                adapter.add(product.getName());
+            }
         }
 
         selectProduct.setAdapter(adapter);
@@ -170,11 +173,13 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         //create array adapter for manafactures
         ArrayAdapter<String> adapterManfact = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
 
-        adapterManfact.add("Add a new product");//add default option
+        adapterManfact.add("Add a new manufacturer");//add default option
 
         //add all products to it
         for (Manufacturer manufacturer : manufacturers) {
-            adapterManfact.add(manufacturer.getName());
+            if (manufacturer.getName() != null) {
+                adapterManfact.add(manufacturer.getName());
+            }
         }
 
         manufactureSelect.setAdapter(adapterManfact);
@@ -333,16 +338,18 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                 layoutName.setVisibility(View.VISIBLE);
                 layoutDiscription.setVisibility(View.VISIBLE);
             } else {
-                layoutName.setVisibility(View.INVISIBLE);
-                layoutDiscription.setVisibility(View.INVISIBLE);
-                selectedProduct = products.get(pos);
+                layoutName.setVisibility(View.GONE);
+                layoutDiscription.setVisibility(View.GONE);
+                manufactureSelect.setVisibility(View.GONE);
+                manufactureText.setVisibility(View.GONE);
+                selectedProduct = products.get(pos - 1);
             }
         } else if (adapterView.getId() == R.id.select_product_manufacture) {
             if (pos == 0) {
                 manufactureText.setVisibility(View.VISIBLE);
             } else {
-                manufactureText.setVisibility(View.INVISIBLE);
-                selectedManufacturer = manufacturers.get(pos);
+                manufactureText.setVisibility(View.GONE);
+                selectedManufacturer = manufacturers.get(pos - 1);
             }
         } else {
             Log.wtf(getClass().getSimpleName(), "Could not identify spinner");

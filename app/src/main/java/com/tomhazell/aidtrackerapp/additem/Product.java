@@ -17,7 +17,6 @@ public class Product {
     @SerializedName(value="product_description")
     private String description;
 
-    @SerializedName(value = "manufacturer")
     private Manufacturer manufacturer;
 
     public Product(String name, String type) {

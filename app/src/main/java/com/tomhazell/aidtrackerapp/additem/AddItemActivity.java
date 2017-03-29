@@ -178,6 +178,6 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
 
     @Override
     public NewItem getItem() {
-        return presenter.getNewItem();
+        return addItemAdapter.createModel();
     }
 }

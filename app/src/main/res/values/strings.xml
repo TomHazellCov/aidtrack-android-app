@@ -17,4 +17,5 @@
     <string name="select_shipment_error_creating">Failed to create shipment, tap next to try again</string>
     <string name="select_product_error">Failed to get list of products tap to retry</string>
     <string name="select_product_error_creating">Failed to create prodcut tap next to try again</string>
+    <string name="select_manufacturer_select">Select A Manufacturer</string>
 </resources>

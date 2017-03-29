@@ -1,6 +1,7 @@
 package com.tomhazell.aidtrackerapp.additem.fragments.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Campaign;
+import com.tomhazell.aidtrackerapp.additem.OuterShipment;
 import com.tomhazell.aidtrackerapp.additem.Shipment;
 import com.tomhazell.aidtrackerapp.additem.ShipmentResponse;
 
@@ -19,7 +20,7 @@ import retrofit2.http.Path;
 public interface ShipmentService {
 
     @GET("v1/shipments/id/{id}")
-    Observable<Shipment> getShipmentById(@Path("id") int id);
+    Observable<OuterShipment> getShipmentById(@Path("id") int id);
 
     @GET("v1/shipments")
     Observable<List<Shipment>> getAllShipments();

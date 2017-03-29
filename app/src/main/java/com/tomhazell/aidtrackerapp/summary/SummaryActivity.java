@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -21,6 +22,9 @@ import butterknife.ButterKnife;
 
 //TODO handle when refered form newItem thing
 public class SummaryActivity extends AppCompatActivity {
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @BindView(R.id.summaryHistory)
     RecyclerView historyRecycler;
@@ -61,6 +65,7 @@ public class SummaryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         historyRecycler.setLayoutManager(layoutManager);

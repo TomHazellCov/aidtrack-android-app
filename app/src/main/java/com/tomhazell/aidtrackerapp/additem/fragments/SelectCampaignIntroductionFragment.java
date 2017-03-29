@@ -55,7 +55,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     TextView errorTextCreating;
 
     boolean gotExistingCampaigns = false;//have we received a list of campaigns
-    boolean isCreatingCampaign = false;//is the user creating a new product or using an existing one
+    boolean isCreatingCampaign = false;//is the user creating a new campaign or using an existing one
     boolean hasCreatedCampaign = false;
 
     private List<Campaign> campaigns;
@@ -126,7 +126,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 
-        adapter.add("Add a new product");//add default option
+        adapter.add("Add a new campaign");//add default option
 
         //add all campaigns to it
         for (Campaign campaign : this.campaigns) {
@@ -171,7 +171,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
     }
 
     /**
-     * calls the API to create a new product
+     * calls the API to create a new campaign
      */
     private void createCampaign(Campaign newCampaign) {
         errorTextCreating.setVisibility(View.INVISIBLE);
