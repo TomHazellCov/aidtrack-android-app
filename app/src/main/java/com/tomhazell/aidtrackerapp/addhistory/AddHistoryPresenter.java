@@ -39,9 +39,22 @@ public class AddHistoryPresenter {
     public AddHistoryPresenter(AddHistoryActivity activity, int itemId) {
         this.itemId = itemId;
         this.activity = activity;
+
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+
+        if (checkPerms()) {
+            getLastLocation();
+        }
+    }
+
+    public void onResume(){
         if (checkPerms()) {
             initGps();
         }
+    }
+
+    public void onPause(){
+        locationManager.removeUpdates(locationListener);
     }
 
     private boolean checkPerms() {
@@ -55,18 +68,12 @@ public class AddHistoryPresenter {
     }
 
     private void initGps() {
-        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);//get last know location
-        displayLocation();
-
         // Called when a new location is found by the network location provider.
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 AddHistoryPresenter.this.location = location;
                 displayLocation();
-
                 Log.d(getClass().getSimpleName(), "Got location " + location.getAccuracy());
             }
 
@@ -134,15 +141,25 @@ public class AddHistoryPresenter {
                     }
 
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {
+                    }
                 });
 
     }
 
     public void onStop() {
-        locationManager.removeUpdates(locationListener);
         for (Disposable disposable : disposables) {
             disposable.dispose();
         }
+    }
+
+    public void getLastLocation() {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            checkPerms();
+            return;
+        }
+        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);//get last know location
+        displayLocation();
+
     }
 }
