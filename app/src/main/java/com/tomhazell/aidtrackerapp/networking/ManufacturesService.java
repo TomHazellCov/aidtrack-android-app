@@ -1,6 +1,7 @@
 package com.tomhazell.aidtrackerapp.networking;
 
 import com.tomhazell.aidtrackerapp.additem.Manufacturer;
+import com.tomhazell.aidtrackerapp.additem.ManufacturesResponce;
 import com.tomhazell.aidtrackerapp.additem.Product;
 
 import java.util.List;
@@ -23,6 +24,6 @@ public interface ManufacturesService {
     Observable<List<Manufacturer>> getAllManufacturers();
 
     @POST("v1/manufacturers")
-    Observable<Manufacturer> createManufacturer(@Body Manufacturer manufacturer);
+    Observable<ManufacturesResponce> createManufacturer(@Body Manufacturer manufacturer);
 
 }

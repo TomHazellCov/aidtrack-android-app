@@ -121,9 +121,9 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
         viewSwitcher.showNext();//show content not the progressbar
 
         //create array adapter for spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_dropdown_item);
 
-        adapter.add("Add a new product");//add default option
+        adapter.add("Add a new shipment");//add default option
 
         //add all shipments to it
         for (Shipment shipment : this.shipments) {
@@ -151,7 +151,7 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
 
                     @Override
                     public void onNext(ShipmentResponse value) {
-                        onShipmentCreated(value.getInfo());
+                        onShipmentCreated(value.getInfo().get(0));
                         isCreatingShipment = false;
                     }
 
@@ -177,7 +177,7 @@ public class SelectShipmentIntroductionFragment extends Fragment implements Vali
     @Override
     public boolean validateDetails() {
         if (gotExistingShipments) {
-            if (selectShipment.getSelectedItemPosition() == 0 && !(!hasCreatedShipment || (layoutName.getEditText().getText().toString().equals(selectedShipment.getName())))) {
+            if (selectShipment.getSelectedItemPosition() == 0 && selectedShipment == null) {//!(!hasCreatedShipment || (layoutName.getEditText().getText().toString().equals(selectedShipment.getName()))) TODO
                 if (isCreatingShipment) {
                     return true;
                 }

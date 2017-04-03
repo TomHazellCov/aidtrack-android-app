@@ -22,4 +22,5 @@
     <string name="additem_intro_text_badid">NFC tag found but it dose not appear to have been used for Air Track before, use the buttons below to add a new item</string>
     <string name="add_history_title">Item Status Details</string>
     <string name="add_history_location_title">Location</string>
+    <string name="summary_history_append">Amend</string>
 </resources>

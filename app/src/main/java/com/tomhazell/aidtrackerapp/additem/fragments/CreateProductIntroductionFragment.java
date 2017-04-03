@@ -40,7 +40,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Tom Hazell on 25/03/2017.
  */
 
-public class CreateProductIntroductionFragment extends Fragment implements ValidatedFragment, NfcListener {
+public class CreateProductIntroductionFragment extends Fragment implements ValidatedFragment, NfcListener, FragmentVis {
 
     public static final int FLIPPER_SCAN_NFC = 1;
     public static final int FLIPPER_SCAN_DONE = 2;
@@ -69,12 +69,12 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
         View v = inflater.inflate(R.layout.fragment_additem_create, container, false);//TODO
         ButterKnife.bind(this, v);
 
-        //first get the item
-        newItem = ((NewItemCallBack) getActivity()).getItem();
-        item = new Item("", newItem.getProduct().getId(), newItem.getCampaign().getId());
-        //create the network request
-        createItem(item);
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     private void createItem(Item item) {
@@ -89,7 +89,7 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
 
                     @Override
                     public void onNext(ItemResponse value) {
-                        onSavedItem(value.getInfo().getId());
+                        onSavedItem(value.getInfo().get(0).getId());
                     }
 
                     @Override
@@ -135,7 +135,7 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
                         @Override
                         public void onError(Throwable e) {
                             Log.e(this.getClass().getSimpleName(), "Error writing to NFC tag", e);
-                            nfcError.setText("Error writing to NFC tag " + e.getClass().getSimpleName() + " try again...");
+                            nfcError.setText("Error writing to NFC tag " + e.toString()+ " try again...");
                         }
                     });
         }
@@ -185,4 +185,12 @@ public class CreateProductIntroductionFragment extends Fragment implements Valid
     }
 
 
+    @Override
+    public void visible() {
+        //first get the item
+        newItem = ((NewItemCallBack) getActivity()).getItem();
+        item = new Item("", newItem.getProduct().getId(), newItem.getShipment().getId());
+        //create the network request
+        createItem(item);
+    }
 }

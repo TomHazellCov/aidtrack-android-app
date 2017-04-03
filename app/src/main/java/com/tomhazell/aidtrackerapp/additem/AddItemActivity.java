@@ -1,5 +1,6 @@
 package com.tomhazell.aidtrackerapp.additem;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -17,6 +18,7 @@ import android.widget.Button;
 
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.fragments.CreateProductIntroductionFragment;
+import com.tomhazell.aidtrackerapp.additem.fragments.FragmentVis;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewItemCallBack;
 import com.tomhazell.aidtrackerapp.additem.fragments.NewTagIntroductionFragment;
 import com.tomhazell.aidtrackerapp.additem.fragments.NfcListener;
@@ -63,6 +65,9 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
     private AddItemPresenter presenter;
     private AddItemAdapter addItemAdapter;
 
+    NfcAdapter mAdapter;
+    PendingIntent mPendingIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +76,10 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
         setSupportActionBar(toolbar);
 
         //display backarrow in top actionbar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//            getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        }
 
         //get Bundle
         boolean newTag = getIntent().getBooleanExtra(SummaryActivity.EXTRA_NEW_TAG, false);
@@ -112,6 +117,14 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
             @Override
             public void onPageSelected(int position) {
                 presenter.onPageSelected(position);
+                ValidatedFragment validatedFragment = fragments.get(position);
+                if (validatedFragment instanceof FragmentVis){
+                    FragmentVis fragment = (FragmentVis) validatedFragment;
+                    if (fragment != null) {
+                        fragment.visible();
+                    }
+
+                }
             }
 
             //unused
@@ -119,6 +132,14 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        mAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mAdapter == null) {
+            //nfc not support your device.
+            return;
+        }
+        mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+                getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
     }
 
@@ -128,10 +149,25 @@ public class AddItemActivity extends AppCompatActivity implements NewItemCallBac
         super.onStop();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+
+    }
+
+    @Override
+    protected void onPause() {
+        if (mAdapter != null) {
+            mAdapter.disableForegroundDispatch(this);
+        }
+        super.onPause();
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
         // Tell the fragment we have a tag if needed
+        Log.w(getClass().getSimpleName(), "New Intentt");
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Fragment fragment = addItemAdapter.getItem(getCurrentPage());
         if (fragment instanceof NfcListener && tag != null){

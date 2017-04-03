@@ -28,16 +28,14 @@ public class SummaryPresenter implements NfcCallback {
 
     private static final int VIEW_LOADING = 1;
     private static final int VIEW_CONTENT = 0;
-    private String tagId;
     private SummaryActivity activity;
     private WholeItem item;
     private boolean isUpdating = false;
 
     private List<Disposable> disposables = new ArrayList<>();
 
-    public SummaryPresenter(SummaryActivity activity, String tagId) {
+    public SummaryPresenter(SummaryActivity activity) {
         this.activity = activity;
-        this.tagId = tagId;
 
         //show loading stuff
         activity.setViewSwitcherItem(VIEW_LOADING);

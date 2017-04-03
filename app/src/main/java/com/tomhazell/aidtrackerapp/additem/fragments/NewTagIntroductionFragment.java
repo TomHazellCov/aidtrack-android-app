@@ -57,6 +57,6 @@ public class NewTagIntroductionFragment extends Fragment implements ValidatedFra
 
     @Override
     public String getTitle() {
-        return "Adding a new title";
+        return "Adding a new product";
     }
 }

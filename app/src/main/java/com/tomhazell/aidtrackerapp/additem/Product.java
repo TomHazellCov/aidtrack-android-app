@@ -19,12 +19,23 @@ public class Product {
 
     private Manufacturer manufacturer;
 
+    @SerializedName(value="manufacturer_id")
+    private int mId;
+
     public Product(String name, String type) {
         this.name = name;
         this.description = type;
     }
 
     public Product() {
+    }
+
+    public int getmId() {
+        return mId;
+    }
+
+    public void setmId(int mId) {
+        this.mId = mId;
     }
 
     public int getId() {
@@ -57,5 +68,6 @@ public class Product {
 
     public void setManufacturer(Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
+        mId = manufacturer.getId();
     }
 }

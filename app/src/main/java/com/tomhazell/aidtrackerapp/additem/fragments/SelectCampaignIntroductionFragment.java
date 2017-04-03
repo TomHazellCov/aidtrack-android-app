@@ -122,7 +122,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
         viewSwitcher.showNext();//show content not the progressbar
 
         //create array adapter for spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 
@@ -145,8 +145,8 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
 
     @Override
     public boolean validateDetails() {
-        if (gotExistingCampaigns) {
-            if (selectCampaigns.getSelectedItemPosition() == 0 && !(!hasCreatedCampaign || (layoutName.getEditText().getText().toString().equals(selectedCampaign.getName())))) {//if selectedCampain is null then we are creating one or we have already created one
+        if (gotExistingCampaigns) {//&& !(!hasCreatedCampaign || (layoutName.getEditText().getText().toString().equals(selectedCampaign.getName()))) TODO
+            if (selectCampaigns.getSelectedItemPosition() == 0 && selectedCampaign == null) {//if selectedCampain is null then we are creating one or we have already created one
                 if (isCreatingCampaign){
                     return false;
                 }
@@ -187,7 +187,7 @@ public class SelectCampaignIntroductionFragment extends Fragment implements Vali
 
                     @Override
                     public void onNext(CampaignResponse value) {
-                        onCampaignCreated(value.getInfo());
+                        onCampaignCreated(value.getInfo().get(0));
                         isCreatingCampaign = false;
                     }
 

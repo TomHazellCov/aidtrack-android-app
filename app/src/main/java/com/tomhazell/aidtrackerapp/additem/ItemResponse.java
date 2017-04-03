@@ -1,12 +1,14 @@
 package com.tomhazell.aidtrackerapp.additem;
 
+import java.util.List;
+
 /**
  * This is the model returned from the API when creating a campaign, we ignore the field shipment_name as we dont need it
  */
 public class ItemResponse {
     private boolean status;
 
-    private Item info;
+    private List<Item> info;
 
     public boolean isStatus() {
         return status;
@@ -16,11 +18,11 @@ public class ItemResponse {
         this.status = status;
     }
 
-    public Item getInfo() {
+    public List<Item> getInfo() {
         return info;
     }
 
-    public void setInfo(Item info) {
+    public void setInfo(List<Item> info) {
         this.info = info;
     }
 }

@@ -41,14 +41,11 @@ public class AddHistoryPresenter {
         this.activity = activity;
 
         locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-
-        if (checkPerms()) {
-            getLastLocation();
-        }
     }
 
     public void onResume(){
         if (checkPerms()) {
+            getLastLocation();
             initGps();
         }
     }

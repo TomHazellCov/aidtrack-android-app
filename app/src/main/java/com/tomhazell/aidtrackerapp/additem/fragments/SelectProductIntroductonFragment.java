@@ -19,6 +19,7 @@ import com.tomhazell.aidtrackerapp.NetworkManager;
 import com.tomhazell.aidtrackerapp.R;
 import com.tomhazell.aidtrackerapp.additem.AddItemActivity;
 import com.tomhazell.aidtrackerapp.additem.Manufacturer;
+import com.tomhazell.aidtrackerapp.additem.ManufacturesResponce;
 import com.tomhazell.aidtrackerapp.additem.NewItem;
 import com.tomhazell.aidtrackerapp.additem.Product;
 import com.tomhazell.aidtrackerapp.additem.ProductResponse;
@@ -156,7 +157,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         viewSwitcher.showNext();//show content not the progressbar
 
         //create array adapter for products
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_dropdown_item);
 
         adapter.add("Add a new product");//add default option
 
@@ -171,7 +172,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         selectProduct.setSelection(0);
 
         //create array adapter for manafactures
-        ArrayAdapter<String> adapterManfact = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapterManfact = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_dropdown_item);
 
         adapterManfact.add("Add a new manufacturer");//add default option
 
@@ -197,7 +198,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
     @Override
     public boolean validateDetails() {
         if (gotProducts) {
-            if (selectProduct.getSelectedItemPosition() == 0 && !(!hasCreatedProduct || (layoutName.getEditText().getText().toString().equals(selectedProduct.getName()) && layoutDiscription.getEditText().getText().toString().equals(selectedProduct.getDescription())))) {//if selectedCampain is null then we are creating one or we have already created one
+            if (selectProduct.getSelectedItemPosition() == 0) {//if selectedCampain is null then we are creating one or we have already created one
                 boolean errors = false;
                 if (isCreateingProduct) {
                     return false;
@@ -214,16 +215,21 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                     errors = true;
                 }
 
-                if (selectProduct.getSelectedItemPosition() == 0 &&manufactureText.getEditText().getText().toString().equals("")) {
+                if (selectProduct.getSelectedItemPosition() == 0 && manufactureText.getEditText().getText().toString().equals("")) {
                     manufactureText.setError("Cant be empty");
                     errors = true;
                 }
 
-                if (errors){
+                if (errors) {
                     return false;
                 }
 
-                if (selectProduct.getSelectedItemPosition() == 0 && !(selectedManufacturer == null || manufactureSelect.getSelectedItemPosition() == 0 && manufactureText.getEditText().getText().toString().equals(selectedManufacturer.getName()))) {
+                if (hasCreatedProduct && (layoutName.getEditText().getText().toString().equals(selectedProduct.getName()) && layoutDiscription.getEditText().getText().toString().equals(selectedProduct.getDescription()))) {
+                    return true;
+                }
+
+//                if (selectProduct.getSelectedItemPosition() == 0 && !(selectedManufacturer == null || manufactureSelect.getSelectedItemPosition() == 0 && manufactureText.getEditText().getText().toString().equals(selectedManufacturer.getName()))) {TODO SOSON RIP ME
+                if (manufactureSelect.getSelectedItemPosition() == 0 && selectedManufacturer == null) {
                     Manufacturer manufacturer = new Manufacturer();
                     manufacturer.setName(manufactureText.getEditText().getText().toString());
                     createManufacturer(manufacturer);
@@ -233,6 +239,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                 //createProduct api call
                 Product product = new Product(layoutName.getEditText().getText().toString(), layoutDiscription.getEditText().getText().toString());
                 product.setManufacturer(selectedManufacturer);
+                product.setmId(selectedManufacturer.getId());
                 createProduct(product);
                 return false;
 
@@ -250,15 +257,15 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         NetworkManager.getInstance().getManufacturesService().createManufacturer(manufacturer)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Manufacturer>() {
+                .subscribe(new Observer<ManufacturesResponce>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposables.add(d);
                     }
 
                     @Override
-                    public void onNext(Manufacturer value) {
-                        selectedManufacturer = value;
+                    public void onNext(ManufacturesResponce value) {
+                        selectedManufacturer = value.getInfo().get(0);
                         isCreateingProduct = false;
                         validateDetails();
                     }
@@ -271,7 +278,8 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
                     }
 
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {
+                    }
                 });
     }
 
@@ -289,7 +297,7 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
 
                     @Override
                     public void onNext(ProductResponse value) {
-                        onProductCreated(value.getInfo());
+                        onProductCreated(value.getInfo().get(0));
                         isCreateingProduct = false;
                     }
 
@@ -337,6 +345,11 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
             if (pos == 0) {
                 layoutName.setVisibility(View.VISIBLE);
                 layoutDiscription.setVisibility(View.VISIBLE);
+                if (manufactureSelect.getSelectedItemPosition() == 0) {
+                    manufactureSelect.setVisibility(View.VISIBLE);
+                    manufactureText.setVisibility(View.VISIBLE);
+                }
+
             } else {
                 layoutName.setVisibility(View.GONE);
                 layoutDiscription.setVisibility(View.GONE);
@@ -370,5 +383,4 @@ public class SelectProductIntroductonFragment extends Fragment implements Valida
         }
         super.onStop();
     }
-
 }

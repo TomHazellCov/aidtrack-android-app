@@ -22,15 +22,15 @@ public class NFCUtils {
 
     public static NdefMessage stringToNdefMessage(String content) throws UnsupportedEncodingException {
         // Get UTF-8 byte
-        byte[] lang = Locale.getDefault().getLanguage().getBytes("UTF-8");
+//        byte[] lang = Locale.getDefault().getLanguage().getBytes("UTF-8");
         byte[] text = content.getBytes("UTF-8"); // Content in UTF-8
 
-        int langSize = lang.length;
+//        int langSize = lang.length;
         int textLength = text.length;
 
-        ByteArrayOutputStream payload = new ByteArrayOutputStream(1 + langSize + textLength);
-        payload.write((byte) (langSize & 0x1F));
-        payload.write(lang, 0, langSize);
+        ByteArrayOutputStream payload = new ByteArrayOutputStream(textLength);
+//        payload.write((byte) (langSize & 0x1F));
+//        payload.write(lang, 0, langSize);
         payload.write(text, 0, textLength);
         NdefRecord record = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload.toByteArray());
         return new NdefMessage(new NdefRecord[]{record});

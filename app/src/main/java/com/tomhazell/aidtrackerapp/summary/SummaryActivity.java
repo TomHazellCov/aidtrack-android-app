@@ -12,6 +12,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -66,6 +68,9 @@ public class SummaryActivity extends AppCompatActivity {
     @BindView(R.id.summaryTrackingRefresh)
     ImageView refreshIcon;
 
+    @BindView(R.id.summaryAddHistory)
+    Button historyChange;
+
     ItemHistoryAdapter adapter;
 
     SummaryPresenter presenter;
@@ -85,10 +90,10 @@ public class SummaryActivity extends AppCompatActivity {
         historyRecycler.addItemDecoration(dividerItemDecoration);
 
 
-        presenter = new SummaryPresenter(this, "1");//TODO in future get id from tag...
+        presenter = new SummaryPresenter(this);//TODO in future get id from tag...
 
         handleIntent(getIntent());
-//        presenter.onGotNfcMessage("2");For debuging if needed
+//        presenter.onGotNfcMessage("2");//For debuging if needed
 
     }
 
@@ -108,14 +113,22 @@ public class SummaryActivity extends AppCompatActivity {
         adapter = new ItemHistoryAdapter(item.getItem().getHistory());
         historyRecycler.setAdapter(adapter);
 
+        if (item.getItem().getHistory().size() == 0) {
+            historyRecycler.setVisibility(View.GONE);
+            historyChange.setText("Tap to add");
+        } else {
+            historyRecycler.setVisibility(View.VISIBLE);
+            historyChange.setText(R.string.summary_history_append);
+        }
+
         itemTitle.setText(item.getProduct().getName());
         itemDescription.setText(item.getProduct().getDescription());
         itemManufacturer.setText(item.getProduct().getManufacturer().getName());
 
-        campaignCreatedBy.setText(item.getCampaign().getCreatedBy() + "TODO get user details");
+        campaignCreatedBy.setText("User " + item.getCampaign().getCreatedBy());
         campaignName.setText(item.getCampaign().getName());
         shipment.setText(item.getShipment().getName());
-        location.setText("Going to " + "? is this being added?");
+//        location.setText("Going to " + "? is this being added?");TODO
 
     }
 
@@ -179,7 +192,7 @@ public class SummaryActivity extends AppCompatActivity {
 
         if (working) {
             refreshIcon.setImageResource(R.drawable.ic_close_black_48dp);
-        }else{
+        } else {
             refreshIcon.setImageResource(R.drawable.ic_refresh_black_48dp);
         }
     }
